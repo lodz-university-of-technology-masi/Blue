@@ -13,6 +13,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@EqualsAndHashCode(exclude = "users")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role {
@@ -24,7 +25,8 @@ public class Role {
 
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
+    @OneToMany(mappedBy = "role",
+    cascade = CascadeType.ALL)
     private Set<ApplicationUser> users = new HashSet<>();
 
 }

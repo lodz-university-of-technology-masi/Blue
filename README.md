@@ -31,8 +31,8 @@ Teraz wszystkie zmiany wprowadzone w plikach frontendowych będą momentalnie pr
 Aplikacja posiada swój Dockerfile dzięki czemu możliwe jest stworzenie obrazu dockerowego i użycie go do serwowania aplikacji. Aby stworzyć obraz dockerowy, będąc w głownym folderze użyj komendy
 `$docker build . --tag rekrutacjaApp:<wersja aplikacji>`
 Aby uruchomić aplikację w kontenerze użyj komendy
-`$docker run -d -p 8080:8080 rekrutacjaApp:<wersja aplikacji>`
-Aplikacja będzie dostepna pod portem 8080
+`$docker run -d -p 8088:8088 rekrutacjaApp:<wersja aplikacji>`
+Aplikacja będzie dostepna pod portem 8088
 
 
 

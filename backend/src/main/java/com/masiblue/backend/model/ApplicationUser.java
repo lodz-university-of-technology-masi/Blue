@@ -5,15 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import java.util.Set;
 
 
 @Entity
 @Data
-@EqualsAndHashCode(exclude = "roles")
+@EqualsAndHashCode(exclude = "role")
 @NoArgsConstructor
 @AllArgsConstructor
 //@Table(name = "account")
@@ -27,11 +25,19 @@ public class ApplicationUser {
 
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable (name = "application_user_roles",
-                joinColumns =  @JoinColumn(name = "application_user_id", referencedColumnName = "id"),
-                inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Set<Role> roles;
+    private String firstName;
+
+    private String lastName;
+
+//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//    @JoinTable (name = "application_user_roles",
+//                joinColumns =  @JoinColumn(name = "application_user_id", referencedColumnName = "id"),
+//                inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+//    private Set<Role> roles;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn
+    private Role role;
 
 //    private boolean confirmed;
 //    private boolean active;

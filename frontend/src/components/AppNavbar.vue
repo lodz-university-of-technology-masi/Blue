@@ -13,7 +13,15 @@
           </b-nav-item>
         </ul>
         <ul class="navbar-nav ml-auto">
-          <b-nav-item href="#" class="navbar-item active" right>Log out</b-nav-item>
+          <b-nav-item href="#" class="navbar-item active" right v-if="hasAuth()" @click="logout()">Log out</b-nav-item>
+          <template v-else>
+            <b-nav-item class="nav-item active" centered>
+              <router-link to="/login">Log in</router-link>
+            </b-nav-item>
+            <b-nav-item class="nav-item active" centered>
+              <router-link to="/register">Register</router-link>
+            </b-nav-item>
+          </template>
         </ul>
       </b-collapse>
     </b-navbar>
@@ -21,7 +29,27 @@
 </template>
 
 <script>
-export default {}
+export default {
+  data: () => {
+    return {
+      auth: false
+    }
+  },
+
+  methods: {
+    logout: function() {
+      localStorage.removeItem('jwt');
+      localStorage.removeItem('authorities');
+      this.$store.commit('updateAuthorities');
+      this.$router.push({path: 'login'})
+    },
+    hasAuth: function () {
+      this.auth = (this.$store.state.token) ? true : false;
+      console.log("calling hasAuth");
+      return this.auth;
+    }
+  }
+}
 </script>
 
 <style>

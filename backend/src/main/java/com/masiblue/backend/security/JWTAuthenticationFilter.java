@@ -57,9 +57,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withClaim(AUTHORITIES_KEY, authorities)
                 .sign(HMAC512(SECRET.getBytes()));
 
-
-
+        response.getWriter().print(" {\n\"" +
+                 HEADER_STRING + "\": \"" + TOKEN_PREFIX + token + "\",\n\"" +
+                 AUTHORITIES_KEY + "\": \"" + authorities + "\"\n" +
+                "}");
 
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+        response.addHeader(AUTHORITIES_KEY, authorities);
     }
 }

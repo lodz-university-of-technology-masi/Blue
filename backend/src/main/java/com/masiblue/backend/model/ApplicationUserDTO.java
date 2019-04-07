@@ -6,12 +6,19 @@ import java.util.List;
 public class ApplicationUserDTO {
 
     public ApplicationUserDTO(ApplicationUser applicationUser) {
-        this.username = applicationUser.getUsername();
-        this.password = applicationUser.getPassword();
-        roles = new ArrayList<>();
-        for(Role role : applicationUser.getRoles()) {
-            roles.add(role.getName());
-        }
+//        this.username = applicationUser.getUsername();
+        this.ID = applicationUser.getId();
+        this.firstName = applicationUser.getFirstName();
+        this.lastName = applicationUser.getLastName();
+        this.role = applicationUser.getRole().getName();
+    }
+
+    public long getID() {
+        return ID;
+    }
+
+    public void setID(long ID) {
+        this.ID = ID;
     }
 
     public String getUsername() {
@@ -22,26 +29,46 @@ public class ApplicationUserDTO {
         this.username = username;
     }
 
-    public List<String> getRoles() {
-        return roles;
+//    public List<String> getRoles() {
+//        return roles;
+//    }
+//
+//    public void setRoles(List<String> roles) {
+//        this.roles = roles;
+//    }
+
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setFirstName(String name) {
+        this.firstName = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setLastName(String surname) {
+        this.lastName = surname;
     }
+
+    private long ID;
 
     private String username;
 
-    private List<String> roles;
+    private String firstName;
 
-    private String password;
+    private String lastName;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    private String role;
 
 }

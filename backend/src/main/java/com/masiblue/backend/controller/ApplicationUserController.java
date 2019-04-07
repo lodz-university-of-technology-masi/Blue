@@ -12,24 +12,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class ApplicationUserController {
 
-    private ApplicationUserService applicationUserService;
+    private final ApplicationUserService applicationUserService;
 
     public ApplicationUserController(ApplicationUserService applicationUserService) {
         this.applicationUserService = applicationUserService;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @GetMapping
     public List listUers() {
         return applicationUserService.findAll().stream().map(ApplicationUserDTO::new).collect(Collectors.toList());
     }
-
-    @PostMapping("/sign-up")
-    public void signUp(@RequestBody ApplicationUser user) {
-        applicationUserService.save(user);
-    }
-
 }

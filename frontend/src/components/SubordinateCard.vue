@@ -96,20 +96,20 @@ export default {
       inputFirstName: "",
       inputLastName: "",
       // TODO: get roles from API
-      availableRoles: [
-        {
-          id: 1,
-          name: "Moderator"
-        },
-        {
-          id: 2,
-          name: "Redactor"
-        },
-        {
-          id: 3,
-          name: "Candidate"
-        }
-      ]
+      availableRoles: []
+      //   {
+      //     id: 1,
+      //     name: "Moderator"
+      //   },
+      //   {
+      //     id: 2,
+      //     name: "Redactor"
+      //   },
+      //   {
+      //     id: 3,
+      //     name: "Candidate"
+      //   }
+      // ]
     };
   },
   methods: {
@@ -124,6 +124,9 @@ export default {
       this.subordinate.firstName = this.inputFirstName; 
       this.subordinate.lastName = this.inputLastName;
     }
+  },
+  mounted() {
+    this.availableRoles = this.$parent.$data.availableRoles;
   }
 };
 </script>

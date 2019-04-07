@@ -30,9 +30,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(username);
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for(Role role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority((role.getName())));
-        }
+//        for(Role role : user.getRoles()) {
+//        }
+        grantedAuthorities.add(new SimpleGrantedAuthority((user.getRole().getName())));
 
         return new User(user.getUsername(), user.getPassword(), grantedAuthorities);
     }
