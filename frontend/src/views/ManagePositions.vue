@@ -22,7 +22,7 @@ export default {
           id: 1,
           firstName: "Maciej",
           lastName: "Wyrzuc",
-          role: "Moderator, Redactor"
+          role: "Moderator"
         },
         {
           id: 2,
