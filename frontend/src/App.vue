@@ -8,14 +8,14 @@
 </template>
 
 <script>
-import AppNavbar from "./components/AppNavbar.vue";
+import AppNavbar from './components/AppNavbar.vue'
 
 export default {
-  name: "app",
+  name: 'app',
   components: {
     AppNavbar
   }
-};
+}
 </script>
 
 <style>
