@@ -12,11 +12,7 @@
             <p class="card-text subordinate-text">{{subordinate.role}}</p>
           </b-col>
           <b-col>
-            <b-button
-              @click="editModalShow = !editModalShow; onSelectedOption = subordinate.role"
-              class="button-left-margin"
-              variant="primary"
-            >Edit</b-button>
+            <b-button @click="initEditModalValues" class="button-left-margin" variant="primary">Edit</b-button>
             <b-button
               @click="deleteModalShow = !deleteModalShow"
               class="button-left-margin"
@@ -30,9 +26,37 @@
       <b-modal
         class="edit-modal"
         v-model="editModalShow"
-        :title="'Change role for ' + subordinate.firstName + ' ' + subordinate.lastName"
+        :title="'Edit ' + subordinate.firstName + ' ' + subordinate.lastName"
       >
         <div>
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>First name</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                v-model="inputFirstName"
+                class="bottom-margin"
+                :title="'First name'"
+                id="input-first-name"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Last name</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                v-model="inputLastName"
+                class="bottom-margin"
+                :title="'Last name'"
+                id="input-last-name"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+
           <b-form>
             <b-dropdown id="dropdown-role" :text="onSelectedOption" class="m-md-2">
               <b-dropdown-item
@@ -44,13 +68,14 @@
             </b-dropdown>
           </b-form>
         </div>
-        <div slot="modal-ok" @click="subordinate.role = onSelectedOption">Save</div>
+        <div slot="modal-ok" @click="saveEditModalValues">Save</div>
       </b-modal>
     </div>
 
     <div>
       <b-modal class="delete-modal" ok-variant="danger" v-model="deleteModalShow" hide-header>
-        Please confirm that you want to delete user <b>{{subordinate.firstName}} {{subordinate.lastName}}</b>
+        Please confirm that you want to delete user
+        <b>{{subordinate.firstName}} {{subordinate.lastName}}</b>
         <div slot="modal-ok">Confirm</div>
       </b-modal>
     </div>
@@ -68,6 +93,8 @@ export default {
       editModalShow: false,
       deleteModalShow: false,
       onSelectedOption: "Choose role",
+      inputFirstName: "",
+      inputLastName: "",
       // TODO: get roles from API
       availableRoles: [
         {
@@ -84,6 +111,19 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    initEditModalValues: function() {
+      this.editModalShow = !this.editModalShow;
+      this.onSelectedOption = this.subordinate.role;
+      this.inputFirstName = this.subordinate.firstName;
+      this.inputLastName = this.subordinate.lastName;
+    },
+    saveEditModalValues: function() {
+      this.subordinate.role = this.onSelectedOption; 
+      this.subordinate.firstName = this.inputFirstName; 
+      this.subordinate.lastName = this.inputLastName;
+    }
   }
 };
 </script>
@@ -100,5 +140,9 @@ export default {
 
 .button-left-margin {
   margin-left: 10px;
+}
+
+.bottom-margin {
+  margin-bottom: 10px;
 }
 </style>
