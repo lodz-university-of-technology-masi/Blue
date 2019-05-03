@@ -29,7 +29,7 @@ public class Role {
 
     @JsonIgnore
     @OneToMany(mappedBy = "role",
-    cascade = CascadeType.ALL)
+    cascade = CascadeType.PERSIST)
     private Set<ApplicationUser> users = new HashSet<>();
 
 }

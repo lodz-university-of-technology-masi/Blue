@@ -2,8 +2,11 @@ package com.masiblue.backend.service;
 
 import com.masiblue.backend.model.UserAccount;
 import com.masiblue.backend.repository.UserAccountRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserAccountService {
@@ -20,7 +23,20 @@ public class UserAccountService {
         userAccountRepository.save(user);
     }
 
+    public boolean delete(long id) {
+        userAccountRepository.deleteById(id);
+        return !userAccountRepository.findById(id).isPresent();
+    }
+
+    public Optional<UserAccount> findById(long id) {
+        return userAccountRepository.findById(id);
+    }
+
     public UserAccount findByUsername(String username) {
         return userAccountRepository.findByUsername(username);
+    }
+
+    public Optional<UserAccount> findByApplicationUserId(long id) {
+        return userAccountRepository.findByApplicationUser_Id(id);
     }
 }
