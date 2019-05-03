@@ -1,10 +1,7 @@
 package com.masiblue.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -17,6 +14,12 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class UserAccount {
 
+    public UserAccount(String username, String password, ApplicationUser applicationUser) {
+        this.username = username;
+        this.password = password;
+        this.applicationUser = applicationUser;
+    }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

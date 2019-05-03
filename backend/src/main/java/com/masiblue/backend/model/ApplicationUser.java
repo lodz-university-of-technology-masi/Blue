@@ -14,6 +14,12 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class ApplicationUser {
 
+    public ApplicationUser(String firstName, String lastName, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

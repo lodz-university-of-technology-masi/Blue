@@ -30,20 +30,15 @@ public class UserAccountController {
         if(userAccountService.findByUsername(userAccountDTO.getUsername()) != null) {
             return new ResponseEntity<>("Username is already in use", HttpStatus.BAD_REQUEST);
         }
-        UserAccount newUserAccount = new UserAccount();
-        newUserAccount.setUsername(userAccountDTO.getUsername());
-        newUserAccount.setPassword(userAccountDTO.getPassword());
-        ApplicationUser newUser = new ApplicationUser();
-        newUser.setFirstName(userAccountDTO.getFirstName());
-        newUser.setLastName(userAccountDTO.getLastName());
 
         Role noneRole = roleService.findByName("NONE");
         if(noneRole == null) {
             noneRole = new Role();
             noneRole.setName("NONE");
         }
-        newUser.setRole(noneRole);
-        newUserAccount.setApplicationUser(newUser);
+
+        ApplicationUser newUser = new ApplicationUser(userAccountDTO.getFirstName(), userAccountDTO.getLastName(), noneRole);
+        UserAccount newUserAccount = new UserAccount(userAccountDTO.getUsername(), userAccountDTO.getPassword(), newUser);
         userAccountService.save(newUserAccount);
         return new ResponseEntity<>("Successfully created new user", HttpStatus.OK);
     }

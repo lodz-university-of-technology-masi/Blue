@@ -36,28 +36,14 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... arg0) throws Exception {
-		UserAccount adminAccount = new UserAccount();
-		adminAccount.setUsername("admin");
-		adminAccount.setPassword("admin");
-		ApplicationUser admin = new ApplicationUser();
-		admin.setFirstName("Maciej");
-		admin.setLastName("Wyrzuc");
-		Role adminRole = new Role();
-		adminRole.setName("ADMIN");
-		admin.setRole(adminRole);
-		adminAccount.setApplicationUser(admin);
+		Role adminRole = new Role("ADMIN");
+		ApplicationUser admin = new ApplicationUser("Maciej", "Wyrzuc", adminRole);
+		UserAccount adminAccount = new UserAccount("admin", "admin", admin);
 		userAccountService.save(adminAccount);
 
-		UserAccount testAccount = new UserAccount();
-		testAccount.setUsername("asia");
-		testAccount.setPassword("asia");
-		ApplicationUser test = new ApplicationUser();
-		test.setFirstName("Joanna");
-		test.setLastName("Górczak");
-		Role testRole = new Role();
-		testRole.setName("MODERATOR");
-		test.setRole(testRole);
-		testAccount.setApplicationUser(test);
+		Role testRole = new Role("ADMIN");
+		ApplicationUser test = new ApplicationUser("Joanna", "Górczak", testRole);
+		UserAccount testAccount = new UserAccount("asia", "asia", test);
 		userAccountService.save(testAccount);
 	}
 
