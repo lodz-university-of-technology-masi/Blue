@@ -1,8 +1,6 @@
 package com.masiblue.backend.service;
 
-import com.masiblue.backend.model.ApplicationUser;
-import com.masiblue.backend.model.Role;
-import com.masiblue.backend.repository.ApplicationUserRepository;
+import com.masiblue.backend.model.UserAccount;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -17,22 +15,20 @@ import java.util.Set;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private ApplicationUserService applicationUserService;
+    private UserAccountService userAccountService;
 
-    public UserDetailsServiceImpl(ApplicationUserService applicationUserService) {
-        this.applicationUserService = applicationUserService;
+    public UserDetailsServiceImpl(UserAccountService userAccountService) {
+        this.userAccountService = userAccountService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        ApplicationUser user = applicationUserService.findByUsername(username);
+        UserAccount user = userAccountService.findByUsername(username);
         if(user == null)
             throw new UsernameNotFoundException(username);
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-//        for(Role role : user.getRoles()) {
-//        }
-        grantedAuthorities.add(new SimpleGrantedAuthority((user.getRole().getName())));
+        grantedAuthorities.add(new SimpleGrantedAuthority((user.getApplicationUser().getRole().getName())));
 
         return new User(user.getUsername(), user.getPassword(), grantedAuthorities);
     }

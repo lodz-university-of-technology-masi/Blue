@@ -10,25 +10,18 @@ import java.util.List;
 @Service
 public class ApplicationUserService {
 
-    private final ApplicationUserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ApplicationUserRepository applicationUserRepository;
 
-    public ApplicationUserService(ApplicationUserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    public ApplicationUserService(ApplicationUserRepository applicationUserRepository) {
+        this.applicationUserRepository = applicationUserRepository;
     }
 
     public void save(ApplicationUser user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-    }
-
-    public ApplicationUser findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        applicationUserRepository.save(user);
     }
 
     public List<ApplicationUser> findAll() {
-        return userRepository.findAll();
+        return applicationUserRepository.findAll();
     }
 
 }

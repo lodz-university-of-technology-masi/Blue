@@ -9,7 +9,7 @@
             >{{subordinate.firstName}} {{subordinate.lastName}}</h5>
           </b-col>
           <b-col>
-            <p class="card-text subordinate-text">{{subordinate.role}}</p>
+            <p class="card-text subordinate-text">{{subordinate.role.name}}</p>
           </b-col>
           <b-col>
             <b-button @click="initEditModalValues" class="button-left-margin" variant="primary">Edit</b-button>
@@ -115,7 +115,7 @@ export default {
   methods: {
     initEditModalValues: function() {
       this.editModalShow = !this.editModalShow;
-      this.onSelectedOption = this.subordinate.role;
+      this.onSelectedOption = this.subordinate.role.name;
       this.inputFirstName = this.subordinate.firstName;
       this.inputLastName = this.subordinate.lastName;
     },

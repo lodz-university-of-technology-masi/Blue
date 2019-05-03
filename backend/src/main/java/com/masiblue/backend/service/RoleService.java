@@ -5,7 +5,6 @@ import com.masiblue.backend.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RoleService {
@@ -21,5 +20,9 @@ public class RoleService {
 
     public Role findById(long Id) {
         return roleRepository.findById(Id).orElse(null);
+    }
+
+    public Role findByName(String name) {
+        return roleRepository.findByName(name);
     }
 }

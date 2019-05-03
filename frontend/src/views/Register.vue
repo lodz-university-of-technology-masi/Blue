@@ -17,6 +17,16 @@
         <input id="password-confirm" type="password" v-model="password_confirmation" required>
       </div>
 
+      <label for="firstName">First Name</label>
+      <div>
+        <input id="firstName" type="text" v-model="firstName" required autofocus>
+      </div>
+
+      <label for="lastName">Last Name</label>
+      <div>
+        <input id="lastName" type="text" v-model="lastName" required autofocus>
+      </div>
+
       <div>
         <button type="submit" @click="handleSubmit">
           Register
@@ -35,6 +45,8 @@
         username : "",
         password : "",
         password_confirmation : "",
+        firstName : "",
+        secondName : ""
       }
     },
     methods : {
@@ -43,11 +55,12 @@
 
         if (this.password === this.password_confirmation && this.password.length > 0)
         {
-          let url = "http://localhost:8088/sign-up"
+          let url = "http://localhost:8088/signUp";
           this.$http.post(url, {
             username: this.username,
             password: this.password,
-
+            firstName: this.firstName,
+            lastName: this.lastName
           })
             .then(response => {
               this.$emit('registered');

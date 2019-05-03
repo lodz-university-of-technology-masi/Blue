@@ -5,27 +5,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode(exclude = "users")
+@EqualsAndHashCode(exclude = "applicationUser")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
+public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String name;
+    private String username;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "role",
-    cascade = CascadeType.ALL)
-    private Set<ApplicationUser> users = new HashSet<>();
+    private String password;
 
+    @OneToOne
+    @Cascade(CascadeType.ALL)
+    ApplicationUser applicationUser;
 }
