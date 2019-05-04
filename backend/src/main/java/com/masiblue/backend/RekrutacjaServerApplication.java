@@ -1,11 +1,11 @@
 package com.masiblue.backend;
 
-import com.masiblue.backend.model.ApplicationUser;
-import com.masiblue.backend.model.Role;
-import com.masiblue.backend.model.RoleConstants;
-import com.masiblue.backend.model.UserAccount;
+import com.masiblue.backend.model.*;
 import com.masiblue.backend.service.ApplicationUserService;
+import com.masiblue.backend.service.LanguageService;
+import com.masiblue.backend.service.PositionService;
 import com.masiblue.backend.service.UserAccountService;
+import org.apache.commons.codec.language.bm.Languages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -30,6 +30,11 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 	@Autowired
 	UserAccountService userAccountService;
 
+	@Autowired
+	PositionService positionService;
+
+	@Autowired
+	LanguageService languageService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(RekrutacjaServerApplication.class, args);
@@ -43,9 +48,14 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 		userAccountService.addNewAccount(adminAccount);
 
 		Role redactorRole = new Role(RoleConstants.REDACTOR_ROLE);
-		ApplicationUser test = new ApplicationUser("Joanna", "Górczak", redactorRole);
+		ApplicationUser test = new ApplicationUser("Justyna", "Michalska", redactorRole);
 		UserAccount testAccount = new UserAccount("asia", "asia", test);
 		userAccountService.addNewAccount(testAccount);
+
+		positionService.add("Java Developer");
+		positionService.add("C++ Developer");
+		languageService.add("Polski");
+		languageService.add("English");
 	}
 
 }
