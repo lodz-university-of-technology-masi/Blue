@@ -17,7 +17,7 @@ public class RoleController {
         this.roleService = roleService;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+    @PreAuthorize("hasAnyRole('MODERATOR')")
     @GetMapping
     public List listRoles() {
         return roleService.findAll();

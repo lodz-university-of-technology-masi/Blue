@@ -1,8 +1,8 @@
 package com.masiblue.backend.controller;
 
-import com.masiblue.backend.Exceptions.PositionAlreadyExistsException;
-import com.masiblue.backend.Exceptions.PositionNotFoundException;
-import com.masiblue.backend.Exceptions.PositionNotValidException;
+import com.masiblue.backend.exception.PositionAlreadyExistsException;
+import com.masiblue.backend.exception.PositionNotFoundException;
+import com.masiblue.backend.exception.PositionNotValidException;
 import com.masiblue.backend.model.Position;
 import com.masiblue.backend.service.PositionService;
 import org.springframework.http.HttpStatus;
@@ -31,13 +31,13 @@ public class PositionController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR','USER')")
+    @PreAuthorize("hasAnyRole('MODERATOR','USER')")
     @GetMapping
     public ResponseEntity listPositions() {
         return new ResponseEntity<>(positionService.findAll(), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','MODERATOR','USER')")
+    @PreAuthorize("hasAnyRole('MODERATOR','USER')")
     @GetMapping("/{id}")
     public ResponseEntity listSinglePosition(@PathVariable("id") long id) {
         try {

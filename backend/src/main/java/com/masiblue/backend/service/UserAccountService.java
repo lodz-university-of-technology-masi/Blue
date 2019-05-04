@@ -7,8 +7,6 @@ import com.masiblue.backend.repository.UserAccountRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserAccountService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -21,25 +19,25 @@ public class UserAccountService {
         this.roleService = roleService;
     }
 
-    public void addNewModerator(UserAccountDTO accountData) throws UserAccountAlreadyExistsException {
-        Role moderatorRole = roleService.findByName(RoleConstants.MODERATOR_ROLE);
-        if(moderatorRole == null) {
-            moderatorRole = new Role(RoleConstants.MODERATOR_ROLE);
+    public void addNewRedactor(UserAccountDTO accountData) throws UserAccountAlreadyExistsException {
+        Role redactorRole = roleService.findByName(RoleConstants.REDACTOR_ROLE);
+        if(redactorRole == null) {
+            redactorRole = new Role(RoleConstants.REDACTOR_ROLE);
         }
 
-        ApplicationUser newModerator = new ApplicationUser(accountData.getFirstName(), accountData.getLastName(), moderatorRole);
+        ApplicationUser newModerator = new ApplicationUser(accountData.getFirstName(), accountData.getLastName(), redactorRole);
         UserAccount newModeratorAccount = new UserAccount(accountData.getUsername(), accountData.getPassword(), newModerator);
         addNewAccount(newModeratorAccount);
     }
 
     public void addNewAccount(UserAccountDTO accountData) throws UserAccountAlreadyExistsException {
-        Role noneRole = roleService.findByName("NONE");
-        if(noneRole == null) {
-            noneRole = new Role();
-            noneRole.setName("NONE");
+        Role userRole = roleService.findByName(RoleConstants.USER_ROLE);
+        if(userRole == null) {
+            userRole = new Role();
+            userRole.setName(RoleConstants.USER_ROLE);
         }
 
-        ApplicationUser newUser = new ApplicationUser(accountData.getFirstName(), accountData.getLastName(), noneRole);
+        ApplicationUser newUser = new ApplicationUser(accountData.getFirstName(), accountData.getLastName(), userRole);
         UserAccount newUserAccount = new UserAccount(accountData.getUsername(), accountData.getPassword(), newUser);
         addNewAccount(newUserAccount);
     }

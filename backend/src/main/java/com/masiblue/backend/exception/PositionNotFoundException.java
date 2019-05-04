@@ -1,4 +1,4 @@
-package com.masiblue.backend.Exceptions;
+package com.masiblue.backend.exception;
 
 public class PositionNotFoundException extends Exception {
 }
