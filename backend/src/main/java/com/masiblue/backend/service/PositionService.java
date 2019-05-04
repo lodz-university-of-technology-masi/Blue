@@ -77,4 +77,8 @@ public class PositionService {
         return newPositionData.getName() != null
                 && !newPositionData.getName().equals("");
     }
+
+    public boolean exists(Position position) throws PositionNotFoundException {
+        return positionRepository.findById(position.getId()).orElseThrow(PositionNotFoundException::new).equals(position);
+    }
 }

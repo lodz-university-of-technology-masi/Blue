@@ -56,6 +56,11 @@ public class UserAccountService {
         return !userAccountRepository.findById(id).isPresent();
     }
 
+    public void deleteByApplicationUserId(long id) throws UserAccountNotFoundException {
+        UserAccount userToDelete = userAccountRepository.findByApplicationUser_Id(id).orElseThrow(UserAccountNotFoundException::new);
+        userAccountRepository.delete(userToDelete);
+    }
+
     public UserAccount findById(long id) throws UserAccountNotFoundException {
         return userAccountRepository.findById(id).orElseThrow(UserAccountNotFoundException::new);
     }

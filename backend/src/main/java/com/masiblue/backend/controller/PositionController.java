@@ -31,13 +31,13 @@ public class PositionController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('MODERATOR','USER')")
+    @PreAuthorize("hasAnyRole('MODERATOR','REDACTOR','USER')")
     @GetMapping
     public ResponseEntity listPositions() {
         return new ResponseEntity<>(positionService.findAll(), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('MODERATOR','USER')")
+    @PreAuthorize("hasAnyRole('MODERATOR','REDACTOR','USER')")
     @GetMapping("/{id}")
     public ResponseEntity listSinglePosition(@PathVariable("id") long id) {
         try {

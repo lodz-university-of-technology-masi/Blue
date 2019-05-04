@@ -91,7 +91,15 @@
               if(localStorage.getItem('jwt') != null) {
                 this.$emit('loggedIn');
                 this.$root.updateAuthorities();
-                this.$router.push('/')
+                if(response.data.Authorities === 'REDACTOR') {
+                  this.$router.push('/tests')
+                } else if(response.data.Authorities === 'MODERATOR') {
+                  this.$router.push('/positions')
+                } else if (response.data.Authorities === 'USER') {
+                  this.$router.push('/select_test')
+                } else {
+                  this.$router.push('/')
+                }
               }
             })
             .catch(function (error) {

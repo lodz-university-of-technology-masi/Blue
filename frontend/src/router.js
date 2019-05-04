@@ -5,6 +5,7 @@ import Login from './views/Login.vue'
 import Register from './views/Register.vue'
 import ManageRedactors from './views/ManageRedactors.vue'
 import ManageTests from './views/ManageTests.vue'
+import SelectTest from "./views/SelectTest";
 
 Vue.use(Router)
 
@@ -40,6 +41,11 @@ export default new Router({
       path: '/tests',
       name: 'manage_tests',
       component: ManageTests
+    },
+    {
+      path: '/select_test',
+      name: 'select_test',
+      component: SelectTest
     }
   ]
 })
