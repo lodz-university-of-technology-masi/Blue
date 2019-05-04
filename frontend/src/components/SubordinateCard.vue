@@ -56,17 +56,6 @@
               ></b-form-input>
             </b-col>
           </b-row>
-
-          <b-form>
-            <b-dropdown id="dropdown-role" :text="onSelectedOption" class="m-md-2">
-              <b-dropdown-item
-                v-for="role in availableRoles"
-                :key="role.id"
-                :value="role.name"
-                @click="onSelectedOption = role.name"
-              >{{role.name}}</b-dropdown-item>
-            </b-dropdown>
-          </b-form>
         </div>
         <div slot="modal-ok" @click="saveEditModalValues">Save</div>
       </b-modal>
@@ -92,41 +81,47 @@ export default {
     return {
       editModalShow: false,
       deleteModalShow: false,
-      onSelectedOption: "Choose role",
       inputFirstName: "",
-      inputLastName: "",
-      // TODO: get roles from API
-      availableRoles: []
-      //   {
-      //     id: 1,
-      //     name: "Moderator"
-      //   },
-      //   {
-      //     id: 2,
-      //     name: "Redactor"
-      //   },
-      //   {
-      //     id: 3,
-      //     name: "Candidate"
-      //   }
-      // ]
+      inputLastName: ""
     };
   },
   methods: {
     initEditModalValues: function() {
       this.editModalShow = !this.editModalShow;
-      this.onSelectedOption = this.subordinate.role.name;
       this.inputFirstName = this.subordinate.firstName;
       this.inputLastName = this.subordinate.lastName;
     },
     saveEditModalValues: function() {
-      this.subordinate.role = this.onSelectedOption; 
       this.subordinate.firstName = this.inputFirstName; 
       this.subordinate.lastName = this.inputLastName;
+      console.log(localStorage.getItem('jwt'));
+      this.$http({
+        url: 'http://localhost:8088/api/moderators/'+this.subordinate.id,
+        method: 'PUT',
+        headers: {
+          'Authorization': localStorage.getItem('jwt'),
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Origin': '*',
+        }, 
+        body: this.subordinate
+      }).then(response => {
+        if(response.status === 200) {
+          console.log('New values for redactor saved!');
+        }
+      }).catch(function(error) {
+        if(error.response.status === 403) {
+          //TODO: Handle non authorized error
+          console.log("403 error")
+        } else if (error.response.status === 500) {
+          //TODO: Handle backend error
+          console.log("Backend error")
+        }
+      }).then(function() {
+        // this.loading = false;
+      })
     }
-  },
-  mounted() {
-    this.availableRoles = this.$parent.$data.availableRoles;
   }
 };
 </script>
