@@ -2,11 +2,10 @@ package com.masiblue.backend.service;
 
 import com.masiblue.backend.exception.ApplicationUserAlreadyExistsException;
 import com.masiblue.backend.exception.ApplicationUserNotFoundException;
-import com.masiblue.backend.exception.ModeratorNotFoundException;
+import com.masiblue.backend.exception.RedactorNotFoundException;
 import com.masiblue.backend.model.ApplicationUser;
 import com.masiblue.backend.model.RoleConstants;
 import com.masiblue.backend.repository.ApplicationUserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,27 +31,27 @@ public class ApplicationUserService {
         return applicationUserRepository.findAll();
     }
 
-    public List<ApplicationUser> findAllModerators() {
-        return applicationUserRepository.findAllByRoleNameEquals(RoleConstants.MODERATOR_ROLE);
+    public List<ApplicationUser> findAllRedactors() {
+        return applicationUserRepository.findAllByRoleNameEquals(RoleConstants.REDACTOR_ROLE);
     }
 
     public ApplicationUser findById(long id) throws ApplicationUserNotFoundException {
         return applicationUserRepository.findById(id).orElseThrow(ApplicationUserNotFoundException::new);
     }
 
-    public ApplicationUser findModeratorById(long id) throws ApplicationUserNotFoundException, ModeratorNotFoundException {
-        ApplicationUser moderator = findById(id);
-        if(!moderator.getRole().getName().equals(RoleConstants.MODERATOR_ROLE)) {
-            throw new ModeratorNotFoundException();
+    public ApplicationUser findRedactorById(long id) throws ApplicationUserNotFoundException, RedactorNotFoundException {
+        ApplicationUser redactor = findById(id);
+        if(!redactor.getRole().getName().equals(RoleConstants.REDACTOR_ROLE)) {
+            throw new RedactorNotFoundException();
         }
-        return moderator;
+        return redactor;
     }
 
-    public boolean updateModerator(long id, ApplicationUser newData) throws ApplicationUserNotFoundException, ModeratorNotFoundException {
+    public boolean updateRedactor(long id, ApplicationUser newData) throws ApplicationUserNotFoundException, RedactorNotFoundException {
         newData.setId(id);
         ApplicationUser oldUser = findById(id);
-        if(!oldUser.getRole().getName().equals(RoleConstants.MODERATOR_ROLE)) {
-            throw new ModeratorNotFoundException();
+        if(!oldUser.getRole().getName().equals(RoleConstants.REDACTOR_ROLE)) {
+            throw new RedactorNotFoundException();
         }
         updateWithNewData(oldUser, newData);
         ApplicationUser updatedUser = applicationUserRepository.save(newData);
@@ -67,10 +66,10 @@ public class ApplicationUserService {
         return updatedUser != null;
     }
 
-    public boolean deleteModerator(long id) throws ApplicationUserNotFoundException, ModeratorNotFoundException {
-        ApplicationUser moderatorToDelete = applicationUserRepository.findById(id).orElseThrow(ApplicationUserNotFoundException::new);
-        if(!moderatorToDelete.getRole().getName().equals(RoleConstants.MODERATOR_ROLE)) {
-            throw new ModeratorNotFoundException();
+    public boolean deleteRedactor(long id) throws ApplicationUserNotFoundException, RedactorNotFoundException {
+        ApplicationUser redactorToDelete = applicationUserRepository.findById(id).orElseThrow(ApplicationUserNotFoundException::new);
+        if(!redactorToDelete.getRole().getName().equals(RoleConstants.REDACTOR_ROLE)) {
+            throw new RedactorNotFoundException();
         }
         applicationUserRepository.deleteById(id);
         return !applicationUserRepository.findById(id).isPresent();
@@ -83,7 +82,6 @@ public class ApplicationUserService {
         applicationUserRepository.deleteById(id);
         return !applicationUserRepository.findById(id).isPresent();
     }
-
 
     private void updateWithNewData(ApplicationUser oldData, ApplicationUser newData) {
         if(newData.getLastName() == null)

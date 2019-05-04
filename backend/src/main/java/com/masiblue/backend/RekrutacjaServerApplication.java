@@ -2,6 +2,7 @@ package com.masiblue.backend;
 
 import com.masiblue.backend.model.ApplicationUser;
 import com.masiblue.backend.model.Role;
+import com.masiblue.backend.model.RoleConstants;
 import com.masiblue.backend.model.UserAccount;
 import com.masiblue.backend.service.ApplicationUserService;
 import com.masiblue.backend.service.UserAccountService;
@@ -36,13 +37,13 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... arg0) throws Exception {
-		Role adminRole = new Role("ADMIN");
-		ApplicationUser admin = new ApplicationUser("Maciej", "Wyrzuc", adminRole);
+		Role moderatorRole = new Role(RoleConstants.MODERATOR_ROLE);
+		ApplicationUser admin = new ApplicationUser("Maciej", "Wyrzuc", moderatorRole);
 		UserAccount adminAccount = new UserAccount("admin", "admin", admin);
 		userAccountService.addNewAccount(adminAccount);
 
-		Role testRole = new Role("MODERATOR");
-		ApplicationUser test = new ApplicationUser("Joanna", "Górczak", testRole);
+		Role redactorRole = new Role(RoleConstants.REDACTOR_ROLE);
+		ApplicationUser test = new ApplicationUser("Joanna", "Górczak", redactorRole);
 		UserAccount testAccount = new UserAccount("asia", "asia", test);
 		userAccountService.addNewAccount(testAccount);
 	}

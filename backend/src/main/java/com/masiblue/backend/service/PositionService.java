@@ -1,8 +1,8 @@
 package com.masiblue.backend.service;
 
-import com.masiblue.backend.Exceptions.PositionAlreadyExistsException;
-import com.masiblue.backend.Exceptions.PositionNotFoundException;
-import com.masiblue.backend.Exceptions.PositionNotValidException;
+import com.masiblue.backend.exception.PositionAlreadyExistsException;
+import com.masiblue.backend.exception.PositionNotFoundException;
+import com.masiblue.backend.exception.PositionNotValidException;
 import com.masiblue.backend.model.Position;
 import com.masiblue.backend.repository.PositionRepository;
 import org.springframework.stereotype.Service;
