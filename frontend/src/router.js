@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import Register from './views/Register.vue'
-import ManagePositions from './views/ManagePositions.vue'
+import ManageRedactors from './views/ManageRedactors.vue'
 import ManageTests from './views/ManageTests.vue'
 import SelectTest from "./views/SelectTest";
 
@@ -33,9 +33,9 @@ export default new Router({
       }
     },
     {
-      path: '/positions',
-      name: 'manage_positions',
-      component: ManagePositions
+      path: '/redactors',
+      name: 'manage_redactors',
+      component: ManageRedactors
     },
     {
       path: '/tests',

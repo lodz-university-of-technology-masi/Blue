@@ -38,7 +38,6 @@
                 v-model="inputFirstName"
                 class="bottom-margin"
                 :title="'First name'"
-                id="input-first-name"
               ></b-form-input>
             </b-col>
           </b-row>
@@ -52,21 +51,9 @@
                 v-model="inputLastName"
                 class="bottom-margin"
                 :title="'Last name'"
-                id="input-last-name"
               ></b-form-input>
             </b-col>
           </b-row>
-
-          <b-form>
-            <b-dropdown id="dropdown-role" :text="onSelectedOption" class="m-md-2">
-              <b-dropdown-item
-                v-for="role in availableRoles"
-                :key="role.id"
-                :value="role.name"
-                @click="onSelectedOption = role.name"
-              >{{role.name}}</b-dropdown-item>
-            </b-dropdown>
-          </b-form>
         </div>
         <div slot="modal-ok" @click="saveEditModalValues">Save</div>
       </b-modal>
@@ -76,7 +63,7 @@
       <b-modal class="delete-modal" ok-variant="danger" v-model="deleteModalShow" hide-header>
         Please confirm that you want to delete user
         <b>{{subordinate.firstName}} {{subordinate.lastName}}</b>
-        <div slot="modal-ok">Confirm</div>
+        <div slot="modal-ok" @click="deleteSubordinate(subordinate.id)">Confirm</div>
       </b-modal>
     </div>
   </div>
@@ -92,31 +79,79 @@ export default {
     return {
       editModalShow: false,
       deleteModalShow: false,
-      onSelectedOption: "Choose role",
       inputFirstName: "",
-      inputLastName: "",
-      // TODO: get roles from API
-      availableRoles: []
-      //   {
-      //     id: 1,
-      //     name: "Moderator"
-      //   },
-      //   {
-      //     id: 2,
-      //     name: "Redactor"
-      //   },
-      //   {
-      //     id: 3,
-      //     name: "Candidate"
-      //   }
-      // ]
+      inputLastName: ""
     };
   },
   methods: {
-
-  },
-  mounted() {
-    this.getLanguages();
+    initEditModalValues: function() {
+      this.editModalShow = !this.editModalShow;
+      this.inputFirstName = this.subordinate.firstName;
+      this.inputLastName = this.subordinate.lastName;
+    },
+    saveEditModalValues: function() {
+      var subordinateToUpdate = this.subordinate;
+      subordinateToUpdate.firstName = this.inputFirstName;
+      subordinateToUpdate.lastName = this.inputLastName;
+      console.log(localStorage.getItem("jwt"));
+      this.$http({
+        url: "/api/users/redactors/" + subordinateToUpdate.id,
+        method: "PUT",
+        headers: {
+          Authorization: localStorage.getItem("jwt"),
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify(subordinateToUpdate)
+      })
+        .then(response => {
+          if (response.status === 200) {
+            console.log("New values for redactor saved!");
+            this.$emit("refreshSubordinates");
+          }
+        })
+        .catch(function(error) {
+          if (error.response.status === 403) {
+            //TODO: Handle non authorized error
+            console.log("403 error");
+          } else if (error.response.status === 500) {
+            //TODO: Handle backend error
+            console.log("Backend error");
+          }
+        })
+        .then(function() {
+          // this.loading = false;
+        });
+    },
+    deleteSubordinate: function(subordinateId) {
+      this.$http({
+        url: "/api/users/redactors/" + subordinateId,
+        method: "DELETE",
+        headers: {
+          Authorization: localStorage.getItem("jwt"),
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
+      })
+        .then(response => {
+          if (response.status === 200) {
+            console.log("Redactor with id " + subordinateId + " successufully deleted.");
+            this.$emit("refreshSubordinates");
+          }
+        })
+        .catch(function(error) {
+          if (error.response.status === 403) {
+            //TODO: Handle non authorized error
+            console.log("403 error");
+          } else if (error.response.status === 500) {
+            //TODO: Handle backend error
+            console.log("Backend error");
+          }
+        })
+        .then(function() {
+          // this.loading = false;
+        });
+    }
   }
 };
 </script>
