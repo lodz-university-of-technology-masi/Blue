@@ -11,6 +11,9 @@
           <b-nav-item class="nav-item active" centered>
             <router-link to="/positions">Manage Positions</router-link>
           </b-nav-item>
+          <b-nav-item class="nav-item active" centered>
+            <router-link to="/tests">Manage Tests</router-link>
+          </b-nav-item>
         </ul>
         <ul class="navbar-nav ml-auto">
           <b-nav-item href="#" class="navbar-item active" right v-if="hasAuth()" @click="logout()">Log out</b-nav-item>

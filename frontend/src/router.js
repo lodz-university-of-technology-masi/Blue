@@ -4,6 +4,7 @@ import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import Register from './views/Register.vue'
 import ManagePositions from './views/ManagePositions.vue'
+import ManageTests from './views/ManageTests.vue'
 
 Vue.use(Router)
 
@@ -34,6 +35,11 @@ export default new Router({
       path: '/positions',
       name: 'manage_positions',
       component: ManagePositions
+    },
+    {
+      path: '/tests',
+      name: 'manage_tests',
+      component: ManageTests
     }
   ]
 })
