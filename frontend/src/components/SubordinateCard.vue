@@ -92,11 +92,12 @@ export default {
       this.inputLastName = this.subordinate.lastName;
     },
     saveEditModalValues: function() {
-      this.subordinate.firstName = this.inputFirstName; 
-      this.subordinate.lastName = this.inputLastName;
+      var subordinateToUpdate = this.subordinate;
+      subordinateToUpdate.firstName = this.inputFirstName; 
+      subordinateToUpdate.lastName = this.inputLastName;
       console.log(localStorage.getItem('jwt'));
       this.$http({
-        url: 'http://localhost:8088/api/moderators/'+this.subordinate.id,
+        url: '/api/users/redactors/'+subordinateToUpdate.id,
         method: 'PUT',
         headers: {
           'Authorization': localStorage.getItem('jwt'),
@@ -105,10 +106,11 @@ export default {
                 'Access-Control-Allow-Headers': '*',
                 'Access-Control-Allow-Origin': '*',
         }, 
-        body: this.subordinate
+        data: JSON.stringify(subordinateToUpdate)
       }).then(response => {
         if(response.status === 200) {
           console.log('New values for redactor saved!');
+          this.$emit('refreshSubordinates');
         }
       }).catch(function(error) {
         if(error.response.status === 403) {
