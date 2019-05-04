@@ -39,12 +39,12 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 		Role adminRole = new Role("ADMIN");
 		ApplicationUser admin = new ApplicationUser("Maciej", "Wyrzuc", adminRole);
 		UserAccount adminAccount = new UserAccount("admin", "admin", admin);
-		userAccountService.save(adminAccount);
+		userAccountService.addNewAccount(adminAccount);
 
 		Role testRole = new Role("MODERATOR");
 		ApplicationUser test = new ApplicationUser("Joanna", "Górczak", testRole);
 		UserAccount testAccount = new UserAccount("asia", "asia", test);
-		userAccountService.save(testAccount);
+		userAccountService.addNewAccount(testAccount);
 	}
 
 }

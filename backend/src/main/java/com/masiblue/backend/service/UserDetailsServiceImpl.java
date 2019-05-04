@@ -1,5 +1,6 @@
 package com.masiblue.backend.service;
 
+import com.masiblue.backend.exception.UserAccountNotFoundException;
 import com.masiblue.backend.model.UserAccount;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,13 +24,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserAccount user = userAccountService.findByUsername(username);
-        if(user == null)
+        try {
+            UserAccount user = userAccountService.findByUsername(username);
+            Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+            grantedAuthorities.add(new SimpleGrantedAuthority((user.getApplicationUser().getRole().getName())));
+
+            return new User(user.getUsername(), user.getPassword(), grantedAuthorities);
+        } catch (UserAccountNotFoundException e) {
             throw new UsernameNotFoundException(username);
-
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority((user.getApplicationUser().getRole().getName())));
-
-        return new User(user.getUsername(), user.getPassword(), grantedAuthorities);
+        }
     }
 }
