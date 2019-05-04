@@ -2,7 +2,7 @@
   <div class="manage_positions">
     <ul id="subordinatesList">
       <li v-for="subordinate in subordinates" :key="subordinate.id">
-        <SubordinateCard :subordinate="subordinate"></SubordinateCard>
+        <SubordinateCard @refreshSubordinates="getSubordinates" :subordinate="subordinate"></SubordinateCard>
       </li>
     </ul>
   </div>
@@ -26,8 +26,7 @@ export default {
     getSubordinates: function () {
       this.loading = true;
       this.$http({
-        // url: 'http://localhost:8088/api/users',
-        url: 'http://localhost:8088/api/moderators',
+        url: '/api/users/redactors/',
         headers: {
           'Authorization': localStorage.getItem('jwt')
         }
