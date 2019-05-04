@@ -1,5 +1,8 @@
 package com.masiblue.backend.service;
 
+import com.masiblue.backend.exception.ApplicationUserAlreadyExistsException;
+import com.masiblue.backend.exception.ApplicationUserNotFoundException;
+import com.masiblue.backend.exception.ModeratorNotFoundException;
 import com.masiblue.backend.model.ApplicationUser;
 import com.masiblue.backend.model.RoleConstants;
 import com.masiblue.backend.repository.ApplicationUserRepository;
@@ -17,8 +20,12 @@ public class ApplicationUserService {
         this.applicationUserRepository = applicationUserRepository;
     }
 
-    public void save(ApplicationUser user) {
-        applicationUserRepository.save(user);
+    public void addNewUser(ApplicationUser user) throws ApplicationUserAlreadyExistsException {
+        if(applicationUserRepository.findById(user.getId()).isPresent()) {
+            throw new ApplicationUserAlreadyExistsException();
+        } else {
+            applicationUserRepository.save(user);
+        }
     }
 
     public List<ApplicationUser> findAll() {
@@ -29,30 +36,61 @@ public class ApplicationUserService {
         return applicationUserRepository.findAllByRoleNameEquals(RoleConstants.MODERATOR_ROLE);
     }
 
-    public ApplicationUser findById(long id) {
-        return applicationUserRepository.findById(id).orElse(null);
+    public ApplicationUser findById(long id) throws ApplicationUserNotFoundException {
+        return applicationUserRepository.findById(id).orElseThrow(ApplicationUserNotFoundException::new);
     }
 
-    public boolean update(long id, ApplicationUser newData) {
-        newData.setId(id);
-        ApplicationUser oldUser = applicationUserRepository.findById(id).orElse(null);
-        if(oldUser == null) {
-            return false;
-        } else {
-            if(newData.getLastName() == null)
-                newData.setLastName(oldUser.getLastName());
-            if(newData.getFirstName() == null)
-                newData.setFirstName(oldUser.getFirstName());
-            if(newData.getRole() == null)
-                newData.setRole(oldUser.getRole());
+    public ApplicationUser findModeratorById(long id) throws ApplicationUserNotFoundException, ModeratorNotFoundException {
+        ApplicationUser moderator = findById(id);
+        if(!moderator.getRole().getName().equals(RoleConstants.MODERATOR_ROLE)) {
+            throw new ModeratorNotFoundException();
         }
+        return moderator;
+    }
+
+    public boolean updateModerator(long id, ApplicationUser newData) throws ApplicationUserNotFoundException, ModeratorNotFoundException {
+        newData.setId(id);
+        ApplicationUser oldUser = findById(id);
+        if(!oldUser.getRole().getName().equals(RoleConstants.MODERATOR_ROLE)) {
+            throw new ModeratorNotFoundException();
+        }
+        updateWithNewData(oldUser, newData);
         ApplicationUser updatedUser = applicationUserRepository.save(newData);
         return updatedUser != null;
     }
 
-    public boolean delete(long id) {
+    public boolean update(long id, ApplicationUser newData) throws ApplicationUserNotFoundException {
+        newData.setId(id);
+        ApplicationUser oldUser = findById(id);
+        updateWithNewData(oldUser, newData);
+        ApplicationUser updatedUser = applicationUserRepository.save(newData);
+        return updatedUser != null;
+    }
+
+    public boolean deleteModerator(long id) throws ApplicationUserNotFoundException, ModeratorNotFoundException {
+        ApplicationUser moderatorToDelete = applicationUserRepository.findById(id).orElseThrow(ApplicationUserNotFoundException::new);
+        if(!moderatorToDelete.getRole().getName().equals(RoleConstants.MODERATOR_ROLE)) {
+            throw new ModeratorNotFoundException();
+        }
         applicationUserRepository.deleteById(id);
         return !applicationUserRepository.findById(id).isPresent();
     }
 
+    public boolean delete(long id) throws ApplicationUserNotFoundException {
+        if(!applicationUserRepository.findById(id).isPresent()) {
+            throw new ApplicationUserNotFoundException();
+        }
+        applicationUserRepository.deleteById(id);
+        return !applicationUserRepository.findById(id).isPresent();
+    }
+
+
+    private void updateWithNewData(ApplicationUser oldData, ApplicationUser newData) {
+        if(newData.getLastName() == null)
+            newData.setLastName(oldData.getLastName());
+        if(newData.getFirstName() == null)
+            newData.setFirstName(oldData.getFirstName());
+        if(newData.getRole() == null)
+            newData.setRole(oldData.getRole());
+    }
 }

@@ -1,5 +1,8 @@
 package com.masiblue.backend.controller;
 
+import com.masiblue.backend.exception.ApplicationUserNotFoundException;
+import com.masiblue.backend.exception.ModeratorNotFoundException;
+import com.masiblue.backend.exception.UserAccountAlreadyExistsException;
 import com.masiblue.backend.model.*;
 import com.masiblue.backend.service.ApplicationUserService;
 import com.masiblue.backend.service.RoleService;
@@ -17,30 +20,23 @@ import java.util.Optional;
 public class ModeratorController {
     private final ApplicationUserService applicationUserService;
     private final UserAccountService userAccountService;
-    private final RoleService roleService;
 
     public ModeratorController(ApplicationUserService applicationUserService, UserAccountService userAccountService, RoleService roleService) {
         this.applicationUserService = applicationUserService;
         this.userAccountService = userAccountService;
-        this.roleService = roleService;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<String> addModerator(@RequestBody UserAccountDTO userAccountDTO) {
-        if(userAccountService.findByUsername(userAccountDTO.getUsername()) != null) {
-            return new ResponseEntity<>("Username is already in use", HttpStatus.BAD_REQUEST);
+        try {
+            userAccountService.addNewModerator(userAccountDTO);
+            return new ResponseEntity<>("Successfully created new moderator", HttpStatus.OK);
+        } catch (UserAccountAlreadyExistsException ex) {
+            return new ResponseEntity<>("Account with this username already exists", HttpStatus.BAD_REQUEST);
         }
 
-        Role moderatorRole = roleService.findByName(RoleConstants.MODERATOR_ROLE);
-        if(moderatorRole == null) {
-            moderatorRole = new Role(RoleConstants.MODERATOR_ROLE);
-        }
 
-        ApplicationUser newModerator = new ApplicationUser(userAccountDTO.getFirstName(), userAccountDTO.getLastName(), moderatorRole);
-        UserAccount newModeratorAccount = new UserAccount(userAccountDTO.getUsername(), userAccountDTO.getPassword(), newModerator);
-        userAccountService.save(newModeratorAccount);
-        return new ResponseEntity<>("Successfully created new moderator", HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -52,55 +48,40 @@ public class ModeratorController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity listSingleModerator(@PathVariable("id") long id) {
-        ApplicationUser moderator = applicationUserService.findById(id);
-        Optional<ResponseEntity<String>> validation = validateModerator(moderator);
-        if(validation.isPresent()) {
-            return validation.get();
+        try {
+            ApplicationUser moderator = applicationUserService.findModeratorById(id);
+            return new ResponseEntity<>(moderator, HttpStatus.OK);
+        } catch (ApplicationUserNotFoundException ex) {
+            return new ResponseEntity<>("There is no user with this id", HttpStatus.BAD_REQUEST);
+        } catch (ModeratorNotFoundException e) {
+            return new ResponseEntity<>("User with this id is not a moderator", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<ApplicationUser>(moderator, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<String> updateModerator(@PathVariable("id") long id, @RequestBody ApplicationUser newUserData) {
-        ApplicationUser userToUpdate = applicationUserService.findById(id);
-        Optional<ResponseEntity<String>> validation = validateModerator(userToUpdate);
-        if(validation.isPresent()) {
-            return validation.get();
-        }
-        if(applicationUserService.update(id, newUserData)) {
-            return new ResponseEntity<>("Succesfully updated moderator data", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Could not update moderator data", HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            applicationUserService.updateModerator(id, newUserData);
+            return new ResponseEntity<>("Successfully updated moderator data", HttpStatus.OK);
+        } catch (ModeratorNotFoundException e) {
+            return new ResponseEntity<>("User with this id is not a moderator", HttpStatus.BAD_REQUEST);
+        } catch (ApplicationUserNotFoundException e) {
+            return new ResponseEntity<>("There is no user with this id", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteModerator(@PathVariable("id") long id) {
-        ApplicationUser userToDelete = applicationUserService.findById(id);
-        Optional<ResponseEntity<String>> validation = validateModerator(userToDelete);
-        if(validation.isPresent()) {
-            return validation.get();
-        }
-        Optional<UserAccount> userAccount = userAccountService.findByApplicationUserId(userToDelete.getId());
-        if(!userAccount.isPresent()) {
-            return new ResponseEntity<>("Could not delete moderator account", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if(userAccountService.delete(userAccount.get().getId())) {
-            return new ResponseEntity<>("Succesfully deleted moderator", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Could not delete moderator", HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            applicationUserService.deleteModerator(id);
+            return new ResponseEntity<>("Successfully deleted moderator data", HttpStatus.OK);
+        } catch (ModeratorNotFoundException e) {
+            return new ResponseEntity<>("User with this id is not a moderator", HttpStatus.BAD_REQUEST);
+        } catch (ApplicationUserNotFoundException e) {
+            return new ResponseEntity<>("There is no user with this id", HttpStatus.BAD_REQUEST);
         }
     }
 
-    private Optional<ResponseEntity<String>> validateModerator(ApplicationUser user) {
-        if(user == null) {
-            return Optional.of(new ResponseEntity<>("There is no user with this id", HttpStatus.BAD_REQUEST));
-        }
-        if(!user.getRole().getName().equals(RoleConstants.MODERATOR_ROLE)) {
-            return Optional.of(new ResponseEntity<>("User with this id is not a moderator", HttpStatus.BAD_REQUEST));
-        }
-        return Optional.empty();
-    }
 }
