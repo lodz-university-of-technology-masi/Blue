@@ -38,7 +38,6 @@
                 v-model="inputFirstName"
                 class="bottom-margin"
                 :title="'First name'"
-                id="input-first-name"
               ></b-form-input>
             </b-col>
           </b-row>
@@ -52,7 +51,6 @@
                 v-model="inputLastName"
                 class="bottom-margin"
                 :title="'Last name'"
-                id="input-last-name"
               ></b-form-input>
             </b-col>
           </b-row>
@@ -65,7 +63,7 @@
       <b-modal class="delete-modal" ok-variant="danger" v-model="deleteModalShow" hide-header>
         Please confirm that you want to delete user
         <b>{{subordinate.firstName}} {{subordinate.lastName}}</b>
-        <div slot="modal-ok">Confirm</div>
+        <div slot="modal-ok" @click="deleteSubordinate(subordinate.id)">Confirm</div>
       </b-modal>
     </div>
   </div>
@@ -93,36 +91,66 @@ export default {
     },
     saveEditModalValues: function() {
       var subordinateToUpdate = this.subordinate;
-      subordinateToUpdate.firstName = this.inputFirstName; 
+      subordinateToUpdate.firstName = this.inputFirstName;
       subordinateToUpdate.lastName = this.inputLastName;
-      console.log(localStorage.getItem('jwt'));
+      console.log(localStorage.getItem("jwt"));
       this.$http({
-        url: '/api/users/redactors/'+subordinateToUpdate.id,
-        method: 'PUT',
+        url: "/api/users/redactors/" + subordinateToUpdate.id,
+        method: "PUT",
         headers: {
-          'Authorization': localStorage.getItem('jwt'),
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Origin': '*',
-        }, 
+          Authorization: localStorage.getItem("jwt"),
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
         data: JSON.stringify(subordinateToUpdate)
-      }).then(response => {
-        if(response.status === 200) {
-          console.log('New values for redactor saved!');
-          this.$emit('refreshSubordinates');
-        }
-      }).catch(function(error) {
-        if(error.response.status === 403) {
-          //TODO: Handle non authorized error
-          console.log("403 error")
-        } else if (error.response.status === 500) {
-          //TODO: Handle backend error
-          console.log("Backend error")
-        }
-      }).then(function() {
-        // this.loading = false;
       })
+        .then(response => {
+          if (response.status === 200) {
+            console.log("New values for redactor saved!");
+            this.$emit("refreshSubordinates");
+          }
+        })
+        .catch(function(error) {
+          if (error.response.status === 403) {
+            //TODO: Handle non authorized error
+            console.log("403 error");
+          } else if (error.response.status === 500) {
+            //TODO: Handle backend error
+            console.log("Backend error");
+          }
+        })
+        .then(function() {
+          // this.loading = false;
+        });
+    },
+    deleteSubordinate: function(subordinateId) {
+      this.$http({
+        url: "/api/users/redactors/" + subordinateId,
+        method: "DELETE",
+        headers: {
+          Authorization: localStorage.getItem("jwt"),
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        }
+      })
+        .then(response => {
+          if (response.status === 200) {
+            console.log("Redactor with id " + subordinateId + " successufully deleted.");
+            this.$emit("refreshSubordinates");
+          }
+        })
+        .catch(function(error) {
+          if (error.response.status === 403) {
+            //TODO: Handle non authorized error
+            console.log("403 error");
+          } else if (error.response.status === 500) {
+            //TODO: Handle backend error
+            console.log("Backend error");
+          }
+        })
+        .then(function() {
+          // this.loading = false;
+        });
     }
   }
 };
