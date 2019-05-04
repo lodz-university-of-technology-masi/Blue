@@ -9,7 +9,7 @@
             <router-link to="/">Home</router-link>
           </b-nav-item>
           <b-nav-item class="nav-item active" centered>
-            <router-link to="/positions">Manage Positions</router-link>
+            <router-link to="/redactors">Manage Redactors</router-link>
           </b-nav-item>
           <b-nav-item class="nav-item active" centered>
             <router-link to="/tests">Manage Tests</router-link>
