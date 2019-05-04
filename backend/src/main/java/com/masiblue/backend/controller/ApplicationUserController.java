@@ -37,12 +37,10 @@ public class ApplicationUserController {
     public ResponseEntity<String> addRedactor(@RequestBody UserAccountDTO userAccountDTO) {
         try {
             userAccountService.addNewRedactor(userAccountDTO);
-            return new ResponseEntity<>("Successfully created new moderator", HttpStatus.OK);
+            return new ResponseEntity<>("Successfully created new redactor", HttpStatus.OK);
         } catch (UserAccountAlreadyExistsException ex) {
             return new ResponseEntity<>("Account with this username already exists", HttpStatus.BAD_REQUEST);
         }
-
-
     }
 
     @PreAuthorize("hasRole('MODERATOR')")
@@ -55,12 +53,12 @@ public class ApplicationUserController {
     @GetMapping("/redactors/{id}")
     public ResponseEntity listSingleRedactor(@PathVariable("id") long id) {
         try {
-            ApplicationUser moderator = applicationUserService.findRedactorById(id);
-            return new ResponseEntity<>(moderator, HttpStatus.OK);
+            ApplicationUser redactor = applicationUserService.findRedactorById(id);
+            return new ResponseEntity<>(redactor, HttpStatus.OK);
         } catch (ApplicationUserNotFoundException ex) {
             return new ResponseEntity<>("There is no user with this id", HttpStatus.BAD_REQUEST);
         } catch (RedactorNotFoundException e) {
-            return new ResponseEntity<>("User with this id is not a moderator", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("User with this id is not a redactor", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -69,9 +67,9 @@ public class ApplicationUserController {
     public ResponseEntity<String> updateRedactor(@PathVariable("id") long id, @RequestBody ApplicationUser newUserData) {
         try {
             applicationUserService.updateRedactor(id, newUserData);
-            return new ResponseEntity<>("Successfully updated moderator data", HttpStatus.OK);
+            return new ResponseEntity<>("Successfully updated redactor data", HttpStatus.OK);
         } catch (RedactorNotFoundException e) {
-            return new ResponseEntity<>("User with this id is not a moderator", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("User with this id is not a redactor", HttpStatus.BAD_REQUEST);
         } catch (ApplicationUserNotFoundException e) {
             return new ResponseEntity<>("There is no user with this id", HttpStatus.BAD_REQUEST);
         }
@@ -82,9 +80,9 @@ public class ApplicationUserController {
     public ResponseEntity<String> deleteRedactor(@PathVariable("id") long id) {
         try {
             applicationUserService.deleteRedactor(id);
-            return new ResponseEntity<>("Successfully deleted moderator data", HttpStatus.OK);
+            return new ResponseEntity<>("Successfully deleted redactor data", HttpStatus.OK);
         } catch (RedactorNotFoundException e) {
-            return new ResponseEntity<>("User with this id is not a moderator", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("User with this id is not a redactor", HttpStatus.BAD_REQUEST);
         } catch (ApplicationUserNotFoundException e) {
             return new ResponseEntity<>("There is no user with this id", HttpStatus.BAD_REQUEST);
         }
