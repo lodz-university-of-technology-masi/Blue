@@ -7,6 +7,7 @@ import com.masiblue.backend.model.TestInformationDTO;
 import com.masiblue.backend.service.TestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/tests")
 public class TestController {
 
-    TestService testService;
+    private final TestService testService;
 
     public TestController(TestService testService) {
         this.testService = testService;
@@ -26,7 +27,8 @@ public class TestController {
 
     @GetMapping
     public List listAllTests() {
-        return testService.findAll().stream().map(TestInformationDTO::new).collect(Collectors.toList());
+//        return testService.findAll().stream().map(TestInformationDTO::new).collect(Collectors.toList());
+        return testService.findAll();
     }
 
     @PostMapping
@@ -56,9 +58,17 @@ public class TestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateSingleTest(@PathVariable("id") long id, @RequestBody TestInformationDTO testInformation) {
-        //TODO
-        return new ResponseEntity<>("Currently unavailable", HttpStatus.BAD_REQUEST);
+    public ResponseEntity updateSingleTest(@PathVariable("id") long id, @RequestBody Test testInformation) {
+        try {
+            testService.update(id, testInformation);
+            return new ResponseEntity<>("Successfully updated test", HttpStatus.OK);
+        } catch (TestNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no test with this id", e);
+        } catch (LanguageNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no such language", e);
+        } catch (PositionNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no such position", e);
+        }
     }
 
     @GetMapping("/position/{id}")

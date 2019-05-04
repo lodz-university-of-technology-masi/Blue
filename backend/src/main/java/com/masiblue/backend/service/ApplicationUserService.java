@@ -3,6 +3,7 @@ package com.masiblue.backend.service;
 import com.masiblue.backend.exception.ApplicationUserAlreadyExistsException;
 import com.masiblue.backend.exception.ApplicationUserNotFoundException;
 import com.masiblue.backend.exception.RedactorNotFoundException;
+import com.masiblue.backend.exception.UserAccountNotFoundException;
 import com.masiblue.backend.model.ApplicationUser;
 import com.masiblue.backend.model.RoleConstants;
 import com.masiblue.backend.repository.ApplicationUserRepository;
@@ -14,9 +15,11 @@ import java.util.List;
 public class ApplicationUserService {
 
     private final ApplicationUserRepository applicationUserRepository;
+    private final UserAccountService userAccountService;
 
-    public ApplicationUserService(ApplicationUserRepository applicationUserRepository) {
+    public ApplicationUserService(ApplicationUserRepository applicationUserRepository, UserAccountService userAccountService) {
         this.applicationUserRepository = applicationUserRepository;
+        this.userAccountService = userAccountService;
     }
 
     public void addNewUser(ApplicationUser user) throws ApplicationUserAlreadyExistsException {
@@ -66,12 +69,12 @@ public class ApplicationUserService {
         return updatedUser != null;
     }
 
-    public boolean deleteRedactor(long id) throws ApplicationUserNotFoundException, RedactorNotFoundException {
+    public boolean deleteRedactor(long id) throws ApplicationUserNotFoundException, RedactorNotFoundException, UserAccountNotFoundException {
         ApplicationUser redactorToDelete = applicationUserRepository.findById(id).orElseThrow(ApplicationUserNotFoundException::new);
         if(!redactorToDelete.getRole().getName().equals(RoleConstants.REDACTOR_ROLE)) {
             throw new RedactorNotFoundException();
         }
-        applicationUserRepository.deleteById(id);
+        userAccountService.deleteByApplicationUserId(id);
         return !applicationUserRepository.findById(id).isPresent();
     }
 
@@ -90,5 +93,9 @@ public class ApplicationUserService {
             newData.setFirstName(oldData.getFirstName());
         if(newData.getRole() == null)
             newData.setRole(oldData.getRole());
+    }
+
+    public boolean exists(ApplicationUser author) throws ApplicationUserNotFoundException {
+        return applicationUserRepository.findById(author.getId()).orElseThrow(ApplicationUserNotFoundException::new).equals(author);
     }
 }

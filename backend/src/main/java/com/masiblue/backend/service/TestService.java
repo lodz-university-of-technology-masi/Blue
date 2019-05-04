@@ -13,13 +13,13 @@ public class TestService {
 
     private final TestRepository testRepository;
     private final ApplicationUserService applicationUserService;
-    private final LanguageRepository languageRepository;
+    private final LanguageService languageService;
     private final PositionService positionService;
 
-    public TestService(TestRepository testRepository, ApplicationUserService applicationUserService, LanguageRepository languageRepository, PositionService positionService) {
+    public TestService(TestRepository testRepository, ApplicationUserService applicationUserService, LanguageService languageService, PositionService positionService) {
         this.testRepository = testRepository;
         this.applicationUserService = applicationUserService;
-        this.languageRepository = languageRepository;
+        this.languageService = languageService;
         this.positionService = positionService;
     }
 
@@ -44,11 +44,37 @@ public class TestService {
     }
 
     public void addNewTest(TestCreateDTO testInformation) throws LanguageNotFoundException, RedactorNotFoundException, ApplicationUserNotFoundException, PositionNotFoundException {
-        Language language = languageRepository.findById(testInformation.getLanguageId()).orElseThrow(LanguageNotFoundException::new);
+        Language language = languageService.findById(testInformation.getLanguageId());
         ApplicationUser redactor = applicationUserService.findRedactorById(testInformation.getAuthorId());
         Position position = positionService.findById(testInformation.getPositionId());
 
         Test newTest = new Test(testInformation.getName(), position, redactor, language);
         testRepository.save(newTest);
+    }
+
+    public void update(long id, Test newTest) throws TestNotFoundException, PositionNotFoundException, LanguageNotFoundException {
+        Test oldTest = findById(id);
+        validateNewTestData(oldTest, newTest);
+        testRepository.save(newTest);
+    }
+
+    private void validateNewTestData(Test oldTest, Test newTest) throws PositionNotFoundException, LanguageNotFoundException {
+        newTest.setId(oldTest.getId());
+        if(newTest.getName() == null) {
+            newTest.setName(oldTest.getName());
+        }
+        newTest.setAuthor(oldTest.getAuthor());
+        if(newTest.getPosition() == null) {
+            newTest.setPosition(oldTest.getPosition());
+        } else if (!positionService.exists(newTest.getPosition())) {
+            throw new PositionNotFoundException();
+        }
+        if(newTest.getLanguage() == null) {
+            newTest.setLanguage(oldTest.getLanguage());
+        } else if (!languageService.exists(newTest.getLanguage())) {
+            throw new LanguageNotFoundException();
+        }
+        newTest.setCreationDate(oldTest.getCreationDate());
+        newTest.setModificationDate(oldTest.getModificationDate());
     }
 }

@@ -1,11 +1,14 @@
 package com.masiblue.backend.service;
 
 import com.masiblue.backend.exception.LanguageAlreadExistsException;
+import com.masiblue.backend.exception.LanguageNotFoundException;
 import com.masiblue.backend.model.Language;
 import com.masiblue.backend.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LanguageService {
@@ -32,5 +35,13 @@ public class LanguageService {
 
     public List findAll() {
         return languageRepository.findAll();
+    }
+
+    public boolean exists(Language language) throws LanguageNotFoundException {
+        return languageRepository.findById(language.getId()).orElseThrow(LanguageNotFoundException::new).equals(language);
+    }
+
+    public Language findById(long languageId) throws LanguageNotFoundException {
+        return languageRepository.findById(languageId).orElseThrow(LanguageNotFoundException::new);
     }
 }

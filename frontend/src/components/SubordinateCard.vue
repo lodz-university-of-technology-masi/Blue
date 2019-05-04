@@ -113,20 +113,10 @@ export default {
     };
   },
   methods: {
-    initEditModalValues: function() {
-      this.editModalShow = !this.editModalShow;
-      this.onSelectedOption = this.subordinate.role.name;
-      this.inputFirstName = this.subordinate.firstName;
-      this.inputLastName = this.subordinate.lastName;
-    },
-    saveEditModalValues: function() {
-      this.subordinate.role = this.onSelectedOption; 
-      this.subordinate.firstName = this.inputFirstName; 
-      this.subordinate.lastName = this.inputLastName;
-    }
+
   },
   mounted() {
-    this.availableRoles = this.$parent.$data.availableRoles;
+    this.getLanguages();
   }
 };
 </script>

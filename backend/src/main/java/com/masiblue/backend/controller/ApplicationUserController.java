@@ -3,6 +3,7 @@ package com.masiblue.backend.controller;
 import com.masiblue.backend.exception.ApplicationUserNotFoundException;
 import com.masiblue.backend.exception.RedactorNotFoundException;
 import com.masiblue.backend.exception.UserAccountAlreadyExistsException;
+import com.masiblue.backend.exception.UserAccountNotFoundException;
 import com.masiblue.backend.model.ApplicationUser;
 import com.masiblue.backend.model.UserAccountDTO;
 import com.masiblue.backend.service.ApplicationUserService;
@@ -85,6 +86,8 @@ public class ApplicationUserController {
             return new ResponseEntity<>("User with this id is not a redactor", HttpStatus.BAD_REQUEST);
         } catch (ApplicationUserNotFoundException e) {
             return new ResponseEntity<>("There is no user with this id", HttpStatus.BAD_REQUEST);
+        } catch (UserAccountNotFoundException e) {
+            return new ResponseEntity<>("User with this id has no account", HttpStatus.BAD_REQUEST);
         }
     }
 
