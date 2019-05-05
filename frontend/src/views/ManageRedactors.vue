@@ -77,6 +77,7 @@
 
 <script>
 import SubordinateCard from "@/components/SubordinateCard.vue";
+import Axios from 'axios'
 
 export default {
   components: {
@@ -122,6 +123,7 @@ export default {
         })
         .catch(function(error) {
           if (error.response.status === 403) {
+            console.log(this);
             //TODO: Handle non authorized error
             console.log("403 error");
           } else if (error.response.status === 500) {

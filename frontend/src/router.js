@@ -7,8 +7,9 @@ import ManageRedactors from './views/ManageRedactors.vue'
 import ManagePositions from './views/ManagePositions.vue'
 import ManageTests from './views/ManageTests.vue'
 import SelectTest from "./views/SelectTest";
+import NotAuthorized from "./views/NotAuthorized";
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
@@ -52,6 +53,11 @@ export default new Router({
       path: '/select_test',
       name: 'select_test',
       component: SelectTest
+    },
+    {
+      path: '/not_authorized',
+      name: 'not_authorized',
+      component: NotAuthorized
     }
   ]
 })

@@ -7,6 +7,8 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+
+
 Vue.prototype.$http = Axios;
 
 Vue.use(BootstrapVue);
@@ -14,6 +16,19 @@ Vue.use(Vuex);
 
 Vue.config.productionTip = false;
 
+Axios.interceptors.response.use(response => {
+  return response
+}, error => {
+  if(error.response.status === 401) {
+    router.push('/login');
+    return Promise.reject(error)
+  } else if (error.response.status === 403) {
+    router.push('/not_authorized');
+    return Promise.reject(error);
+  } else {
+    return Promise.reject(error);
+  }
+});
 
 
 const loadToken = (keyName) => {
