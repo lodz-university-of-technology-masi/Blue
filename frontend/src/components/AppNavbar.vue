@@ -11,12 +11,21 @@
           <b-nav-item v-if="isModerator()" class="nav-item active" centered>
             <router-link to="/redactors">Manage Redactors</router-link>
           </b-nav-item>
+          <b-nav-item v-if="isModerator()" class="nav-item active" centered>
+            <router-link to="/positions">Manage Positions</router-link>
+          </b-nav-item>
           <b-nav-item v-if="isRedactor()" class="nav-item active" centered>
             <router-link to="/tests">Manage Tests</router-link>
           </b-nav-item>
         </ul>
         <ul class="navbar-nav ml-auto">
-          <b-nav-item href="#" class="navbar-item active" right v-if="hasAuth()" @click="logout()">Log out</b-nav-item>
+          <b-nav-item
+            href="#"
+            class="navbar-item active"
+            right
+            v-if="hasAuth()"
+            @click="logout()"
+          >Log out</b-nav-item>
           <template v-else>
             <b-nav-item class="nav-item active" centered>
               <router-link to="/login">Log in</router-link>
@@ -37,34 +46,34 @@ export default {
     return {
       auth: false,
       role: ""
-    }
+    };
   },
 
   methods: {
     logout: function() {
-      localStorage.removeItem('jwt');
-      localStorage.removeItem('authorities');
-      this.$store.commit('updateAuthorities');
-      this.$router.push({path: 'login'})
+      localStorage.removeItem("jwt");
+      localStorage.removeItem("authorities");
+      this.$store.commit("updateAuthorities");
+      this.$router.push({ path: "login" });
     },
-    hasAuth: function () {
-      this.auth = (this.$store.state.token) ? true : false;
+    hasAuth: function() {
+      this.auth = this.$store.state.token ? true : false;
       return this.auth;
     },
     isModerator: function() {
       this.role = this.$store.state.authorities;
-      return this.role === 'MODERATOR'
+      return this.role === "MODERATOR";
     },
     isRedactor: function() {
       this.role = this.$store.state.authorities;
-      return this.role === 'REDACTOR'
+      return this.role === "REDACTOR";
     },
     isUser: function() {
       this.role = this.$store.state.authorities;
-      return this.role === 'USER'
+      return this.role === "USER";
     }
-}
-}
+  }
+};
 </script>
 
 <style>
