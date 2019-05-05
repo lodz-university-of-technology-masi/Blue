@@ -8,10 +8,10 @@
           <b-nav-item class="nav-item active" centered>
             <router-link to="/">Home</router-link>
           </b-nav-item>
-          <b-nav-item class="nav-item active" centered>
+          <b-nav-item v-if="isModerator()" class="nav-item active" centered>
             <router-link to="/redactors">Manage Redactors</router-link>
           </b-nav-item>
-          <b-nav-item class="nav-item active" centered>
+          <b-nav-item v-if="isRedactor()" class="nav-item active" centered>
             <router-link to="/tests">Manage Tests</router-link>
           </b-nav-item>
         </ul>
@@ -35,7 +35,8 @@
 export default {
   data: () => {
     return {
-      auth: false
+      auth: false,
+      role: ""
     }
   },
 
@@ -48,10 +49,21 @@ export default {
     },
     hasAuth: function () {
       this.auth = (this.$store.state.token) ? true : false;
-      console.log("calling hasAuth");
       return this.auth;
+    },
+    isModerator: function() {
+      this.role = this.$store.state.authorities;
+      return this.role === 'MODERATOR'
+    },
+    isRedactor: function() {
+      this.role = this.$store.state.authorities;
+      return this.role === 'REDACTOR'
+    },
+    isUser: function() {
+      this.role = this.$store.state.authorities;
+      return this.role === 'USER'
     }
-  }
+}
 }
 </script>
 
