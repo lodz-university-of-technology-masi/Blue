@@ -34,11 +34,7 @@
               <label>First name</label>
             </b-col>
             <b-col sm="9">
-              <b-form-input
-                v-model="inputFirstName"
-                class="bottom-margin"
-                :title="'First name'"
-              ></b-form-input>
+              <b-form-input v-model="inputFirstName" class="bottom-margin" :title="'First name'"></b-form-input>
             </b-col>
           </b-row>
 
@@ -47,11 +43,7 @@
               <label>Last name</label>
             </b-col>
             <b-col sm="9">
-              <b-form-input
-                v-model="inputLastName"
-                class="bottom-margin"
-                :title="'Last name'"
-              ></b-form-input>
+              <b-form-input v-model="inputLastName" class="bottom-margin" :title="'Last name'"></b-form-input>
             </b-col>
           </b-row>
         </div>
@@ -124,6 +116,7 @@ export default {
         });
     },
     deleteSubordinate: function(subordinateId) {
+      console.log(localStorage.getItem("jwt"));
       this.$http({
         url: "/api/users/redactors/" + subordinateId,
         method: "DELETE",
@@ -135,7 +128,7 @@ export default {
       })
         .then(response => {
           if (response.status === 200) {
-            console.log("Redactor with id " + subordinateId + " successufully deleted.");
+            console.log("Redactor successufully deleted.");
             this.$emit("refreshSubordinates");
           }
         })

@@ -1,18 +1,50 @@
 <template>
   <div>
     <div>
-      <button type="button" class="margin-bottom btn btn-success btn-lg">Add new position</button>
+      <button
+        type="button"
+        @click="initNewPositionModalValues"
+        class="margin-bottom btn btn-success btn-lg"
+      >Add new position</button>
       <ul id="positionsList">
         <li v-for="position in positions" :key="position.id">
-          <PositionCard :position="position"></PositionCard>
+          <PositionCard @refreshPositions="getPositions" :position="position"></PositionCard>
         </li>
       </ul>
+    </div>
+
+    <div>
+      <b-modal class="add-position-modal" v-model="addPositionModalShow" title="Add new position">
+        <div>
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Name</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input v-model="inputName" class="bottom-margin" :title="'Name'"></b-form-input>
+            </b-col>
+          </b-row>
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Activate</label>
+            </b-col>
+            <b-col sm="2">
+              <b-form-checkbox v-model="newActive" size="30px" name="check-button" switch>
+                <b v-if="newActive == true">Active</b>
+                <b v-else>Inactive</b>
+              </b-form-checkbox>
+            </b-col>
+          </b-row>
+        </div>
+        <div @click="addPosition" slot="modal-ok">Save</div>
+      </b-modal>
     </div>
   </div>
 </template>
 
 <script>
 import PositionCard from "@/components/PositionCard.vue";
+import { constants } from "fs";
 
 export default {
   components: {
@@ -20,67 +52,83 @@ export default {
   },
   data: function() {
     return {
-      positions: [
-    {
-        "id": 1,
-        "name": "Java Developer",
-        "active": true
-    },
-    {
-        "id": 2,
-        "name": "Senior C++ Developer",
-        "active": true
-    },
-    {
-        "id": 3,
-        "name": "Junior C# Developer",
-        "active": false
-    },
-    {
-        "id": 4,
-        "name": "C++ intern",
-        "active": false
-    },
-    {
-        "id": 5,
-        "name": "Scrum Master",
-        "active": true
-    }
-]
+      addPositionModalShow: false,
+      positions: [],
+      inputName: "",
+      newActive: true,
+      newPosition: {
+        name: "",
+        active: ""
+      }
     };
   },
-//   methods: {
-//     getPositions: function() {
-//       this.loading = true;
-//       this.$http({
-//         url: "/api/positions",
-//         headers: {
-//           Authorization: localStorage.getItem("jwt")
-//         }
-//       })
-//         .then(response => {
-//           if (response.status === 200) {
-//             console.log(response.data);
-//             this.positions = response.data;
-//           }
-//         })
-//         .catch(function(error) {
-//           if (error.response.status === 403) {
-//             //TODO: Handle non authorized error
-//             console.log("403 error");
-//           } else if (error.response.status === 500) {
-//             //TODO: Handle backend error
-//             console.log("Backend error");
-//           }
-//         })
-//         .then(function() {
-//           // this.loading = false;
-//         });
-//     }
-//   },
-//   mounted: function() {
-//     this.getPositions();
-//   }
+  methods: {
+    initNewPositionModalValues: function() {
+      this.inputName = "";
+      this.addPositionModalShow = true;
+    },
+    getPositions: function() {
+      this.loading = true;
+      this.$http({
+        url: "/api/positions",
+        headers: {
+          Authorization: localStorage.getItem("jwt")
+        }
+      })
+        .then(response => {
+          if (response.status === 200) {
+            this.positions = response.data.reverse();
+          }
+        })
+        .catch(function(error) {
+          if (error.response.status === 403) {
+            //TODO: Handle non authorized error
+            console.log("403 error");
+          } else if (error.response.status === 500) {
+            //TODO: Handle backend error
+            console.log("Backend error");
+          }
+        })
+        .then(function() {
+          // this.loading = false;
+        });
+    },
+    addPosition: function() {
+      this.newPosition.name = this.inputName;
+      this.newPosition.active = this.newActive;
+      this.$http({
+        url: "/api/positions",
+        method: "POST",
+        headers: {
+          Authorization: localStorage.getItem("jwt"),
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        data: JSON.stringify(this.newPosition)
+      })
+        .then(response => {
+          if (response.status === 200) {
+            console.log("New position added!");
+            this.getPositions();
+          }
+        })
+        .catch(function(error) {
+          if (error.response.status === 403) {
+            //TODO: Handle non authorized error
+            console.log("403 error");
+          } else if (error.response.status === 500) {
+            //TODO: Handle backend error
+            console.log("Backend error");
+          }
+        })
+        .then(function() {
+          // this.loading = false;
+        });
+    }
+  },
+  mounted: function() {
+    this.getPositions();
+  }
 };
 </script>
 
