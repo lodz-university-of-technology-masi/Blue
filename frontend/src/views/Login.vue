@@ -94,7 +94,7 @@
                 if(response.data.Authorities === 'REDACTOR') {
                   this.$router.push('/tests')
                 } else if(response.data.Authorities === 'MODERATOR') {
-                  this.$router.push('/positions')
+                  this.$router.push('/redactors')
                 } else if (response.data.Authorities === 'USER') {
                   this.$router.push('/select_test')
                 } else {
