@@ -117,8 +117,7 @@ export default {
       })
         .then(response => {
           if (response.status === 200) {
-            console.log(response.data);
-            this.subordinates = response.data;
+            this.subordinates = response.data.reverse();
           }
         })
         .catch(function(error) {

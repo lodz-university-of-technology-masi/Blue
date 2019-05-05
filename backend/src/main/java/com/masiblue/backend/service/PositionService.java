@@ -53,10 +53,6 @@ public class PositionService {
             throw new PositionNotValidException();
         }
 
-        if(positionRepository.findByName(newPositionData.getName()).isPresent()) {
-            throw new PositionAlreadyExistsException();
-        }
-
         newPositionData.setId(id);
         positionRepository.save(newPositionData);
 
