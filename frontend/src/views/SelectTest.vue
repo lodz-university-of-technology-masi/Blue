@@ -8,7 +8,7 @@
           v-for="role in availableLanguages"
           :key="role.id"
           :value="role.name"
-          @click="onSelectedOption = role.name"
+          @click="onSelectedLanguageOption = role.name"
         >{{role.name}}</b-dropdown-item>
       </b-dropdown>
       <br />
@@ -18,7 +18,7 @@
           v-for="role in availablePositions"
           :key="role.id"
           :value="role.name"
-          @click="onSelectedOption = role.name"
+          @click="onSelectedPositionOption = role.name"
         >{{role.name}}</b-dropdown-item>
       </b-dropdown>
     </b-form>
