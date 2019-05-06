@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -44,6 +45,6 @@ public class Test {
 
     private LocalDateTime modificationDate;
 
-//
-//    private List<Question> questions;
+    /*@ManyToMany
+    private List<Question> questions;*/
 }

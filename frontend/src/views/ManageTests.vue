@@ -62,7 +62,7 @@
       </template>
 
       <template slot="author" slot-scope="row">
-        {{ row.value.first }} {{ row.value.last }}
+        {{ row.value.first }} {{ row.value.lastName }}
       </template>
 
       <template slot="jobtitle" slot-scope="row">
