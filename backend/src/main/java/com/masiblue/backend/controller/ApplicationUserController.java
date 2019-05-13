@@ -44,7 +44,7 @@ public class ApplicationUserController {
         }
     }
 
-    @PreAuthorize("hasRole('MODERATOR')")
+    @PreAuthorize("hasRole('ROLE_MODERATOR')")
     @GetMapping("/redactors")
     public List listRedactors() {
         return applicationUserService.findAllRedactors();
