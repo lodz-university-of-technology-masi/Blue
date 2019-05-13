@@ -61,15 +61,15 @@
         {{ row.value}}
       </template>
 
-      <template slot="author" slot-scope="row">
+      <!--<template slot="author" slot-scope="row">
         {{ row.value.first }} {{ row.value.last }}
-      </template>
+      </template>-->
 
       <template slot="jobtitle" slot-scope="row">
         {{ row.value}}
       </template>
 
-      <template slot="actions" slot-scope="row">
+      <!--<template slot="actions" slot-scope="row">
         <b-button size="sm" @click="row.toggleDetails" class="mr-1">
           {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
         </b-button>
@@ -78,6 +78,12 @@
         </b-button>
         <b-button size="sm" class="mr-1">
           Delete
+        </b-button>
+      </template>-->
+
+      <template slot="actions" slot-scope="row">
+        <b-button size="sm" @click="row.toggleDetails" class="mr-1">
+          Solve
         </b-button>
       </template>
 
@@ -115,15 +121,14 @@
           { author: { first: 'Maciej', last: 'Liźniewicz' }, name: 'Test 1', job_title: 'Junior Java Developer', creation_date: '28-04-2019', date_modified: '30-04-2019'},
           { author: { first: 'Maciej', last: 'Wyrzuc' }, name: 'Test 2', job_title: 'Web Designer', creation_date: '28-04-2019', date_modified: '30-04-2019'},
           { author: { first: 'Joanna', last: 'Górczak' }, name: 'Test 3', job_title: 'Senior Test Engineer', creation_date: '25-04-2019', date_modified: '30-04-2019'},
-          { author: { first: 'Joanna', last: 'Górczak' }, name: 'Test 4', job_title: 'Junior Test Engineer', creation_date: '21-04-2019', date_modified: '30-04-2019'}, 
-          { author: { first: 'Jerzy', last: 'Pakuła' }, name: 'Test 5', job_title: 'Senior Java Developer', creation_date: '18-04-2019', date_modified: '30-04-2019'}, 
-          { author: { first: 'Maciej', last: 'Liźniewicz' }, name: 'Test 6', job_title: 'Junior Test Engineer', creation_date: '10-04-2019', date_modified: '30-04-2019'},  
-          { author: { first: 'Jerzy', last: 'Pakuła' }, name: 'Test 7', job_title: 'PHP Developer', creation_date: '27-04-2019', date_modified: '30-04-2019'}, 
+          { author: { first: 'Joanna', last: 'Górczak' }, name: 'Test 4', job_title: 'Junior Test Engineer', creation_date: '21-04-2019', date_modified: '30-04-2019'},
+          { author: { first: 'Jerzy', last: 'Pakuła' }, name: 'Test 5', job_title: 'Senior Java Developer', creation_date: '18-04-2019', date_modified: '30-04-2019'},
+          { author: { first: 'Maciej', last: 'Liźniewicz' }, name: 'Test 6', job_title: 'Junior Test Engineer', creation_date: '10-04-2019', date_modified: '30-04-2019'},
+          { author: { first: 'Jerzy', last: 'Pakuła' }, name: 'Test 7', job_title: 'PHP Developer', creation_date: '27-04-2019', date_modified: '30-04-2019'},
           { author: { first: 'Maciej', last: 'Wyrzuc' }, name: 'Test 8', job_title: 'Web Designer', creation_date: '29-04-2019', date_modified: '30-04-2019'},
         ],
         fields: [
           { key: 'name', label: 'Test name', sortable: true, sortDirection: 'desc' },
-          { key: 'author', label: 'Author', sortable: true, class: 'text-center' },
           { key: 'job_title', label: 'Job title', sortable: true, class: 'text-center' },
           { key: 'actions', label: 'Actions' }
         ],

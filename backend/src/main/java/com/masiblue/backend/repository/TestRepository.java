@@ -11,4 +11,5 @@ public interface TestRepository extends JpaRepository<Test, Long> {
     List<Test> findAllByPosition_Id(long id);
     List<Test> findAllByAuthor_Id(long id);
     List<Test> findAllByLanguage_Id(long id);
+    List<Test> findAllByLanguage_IdAndPosition_Id(long language_id, long position_id);
 }

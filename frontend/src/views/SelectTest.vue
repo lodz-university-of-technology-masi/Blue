@@ -22,7 +22,7 @@
         >{{role.name}}</b-dropdown-item>
       </b-dropdown>
     </b-form>
-    <button type="submit" @click="languageSelected">
+    <button type="submit" @click="select">
       Select
     </button>
   </div>
@@ -85,8 +85,10 @@
             // this.loading = false;
           })
         },
-        languageSelected: function() {
-
+        select: function() {
+          //TODO: Handle no lang selection
+          //TODO: Handle no position selection
+          this.$router.push('solve_tests');
         }
       },
     mounted () {

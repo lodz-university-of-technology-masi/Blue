@@ -6,7 +6,8 @@ import Register from './views/Register.vue'
 import ManageRedactors from './views/ManageRedactors.vue'
 import ManagePositions from './views/ManagePositions.vue'
 import ManageTests from './views/ManageTests.vue'
-import SelectTest from "./views/SelectTest";
+import SelectTest from "./views/SelectTest.vue";
+import SolveTests from "./views/SolveTests.vue";
 
 Vue.use(Router)
 
@@ -52,6 +53,11 @@ export default new Router({
       path: '/select_test',
       name: 'select_test',
       component: SelectTest
+    },
+    {
+      path: '/solve_tests',
+      name: 'solve_tests',
+      component: SolveTests
     }
   ]
 })

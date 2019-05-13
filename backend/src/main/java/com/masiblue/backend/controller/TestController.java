@@ -4,6 +4,7 @@ import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.Test;
 import com.masiblue.backend.model.TestCreateDTO;
 import com.masiblue.backend.model.TestInformationDTO;
+import com.masiblue.backend.model.TestSolveDTO;
 import com.masiblue.backend.service.TestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,6 +70,11 @@ public class TestController {
         } catch (PositionNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no such position", e);
         }
+    }
+
+    @GetMapping("/solvelist")
+    public List listTestsForSolve(@RequestBody TestSolveDTO testInformation){
+        return testService.findAllByLangAndPos(testInformation);
     }
 
     @GetMapping("/position/{id}")
