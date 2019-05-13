@@ -1,14 +1,15 @@
 package com.masiblue.backend.service;
 
-import com.masiblue.backend.exception.ApplicationUserAlreadyExistsException;
-import com.masiblue.backend.exception.ApplicationUserNotFoundException;
-import com.masiblue.backend.exception.RedactorNotFoundException;
-import com.masiblue.backend.exception.UserAccountNotFoundException;
+import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.ApplicationUser;
 import com.masiblue.backend.model.RoleConstants;
+import com.masiblue.backend.model.UserAccount;
 import com.masiblue.backend.repository.ApplicationUserRepository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -49,6 +50,20 @@ public class ApplicationUserService {
         }
         return redactor;
     }
+
+    public ApplicationUser findByUsername(String username) throws UserAccountNotFoundException, ApplicationUserNotFoundException {
+        UserAccount userAcc = userAccountService.findByUsername(username);
+        return findById(userAcc.getId());
+    }
+
+    public ApplicationUser findRedactorByUsername(String username) throws UserAccountNotFoundException, ApplicationUserNotFoundException, RedactorNotFoundException {
+        ApplicationUser redactor = findByUsername(username);
+        if(!redactor.getRole().getName().equals(RoleConstants.REDACTOR_ROLE)) {
+            throw new RedactorNotFoundException();
+        }
+        return redactor;
+    }
+
 
     public boolean updateRedactor(long id, ApplicationUser newData) throws ApplicationUserNotFoundException, RedactorNotFoundException {
         newData.setId(id);

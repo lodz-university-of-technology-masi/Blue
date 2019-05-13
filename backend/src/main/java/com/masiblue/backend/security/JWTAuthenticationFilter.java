@@ -51,13 +51,14 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .withClaim(AUTHORITIES_KEY, authorities)
                 .sign(HMAC512(SECRET.getBytes()));
+        String authority = authorities.substring(authorities.indexOf("_") + 1);
 
         response.getWriter().print(" {\n\"" +
                  HEADER_STRING + "\": \"" + TOKEN_PREFIX + token + "\",\n\"" +
-                 AUTHORITIES_KEY + "\": \"" + authorities + "\"\n" +
+                 AUTHORITIES_KEY + "\": \"" + authority + "\"\n" +
                 "}");
 
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-        response.addHeader(AUTHORITIES_KEY, authorities);
+        response.addHeader(AUTHORITIES_KEY, authority);
     }
 }
