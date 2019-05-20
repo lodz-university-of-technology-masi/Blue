@@ -117,6 +117,7 @@
   export default {
     data() {
       return {
+
         items: [
           { author: { first: 'Maciej', last: 'Liźniewicz' }, name: 'Test 1', job_title: 'Junior Java Developer', creation_date: '28-04-2019', date_modified: '30-04-2019'},
           { author: { first: 'Maciej', last: 'Wyrzuc' }, name: 'Test 2', job_title: 'Web Designer', creation_date: '28-04-2019', date_modified: '30-04-2019'},
@@ -144,7 +145,8 @@
           id: 'info-modal',
           title: '',
           content: ''
-        }
+        },
+        langId: this.$route.params.idlang
       }
     },
     computed: {
@@ -157,12 +159,16 @@
       }
     },
     mounted() {
+      this.getTests()
       this.totalRows = this.items.length
     },
     methods: {
-      getLanguages: function() {
+      getTests: function() {
+        console.log(this.$route.params)
         this.$http({
           url: 'http://localhost:8088/api/tests',
+          url: 'http://localhost:8088/api/tests/solvelist/' +
+            this.$route.params.langId + '/' + this.$route.params.posId,
           headers: {
             'Authorization': localStorage.getItem('jwt')
           }
