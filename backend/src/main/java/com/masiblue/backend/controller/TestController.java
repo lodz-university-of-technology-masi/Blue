@@ -72,9 +72,9 @@ public class TestController {
         }
     }
 
-    @GetMapping("/solvelist")
-    public List listTestsForSolve(@RequestBody TestSolveDTO testInformation){
-        return testService.findAllByLangAndPos(testInformation);
+    @GetMapping("/solvelist/{idlang}/{idpos}")
+    public List listTestsForSolve(@PathVariable("idlang") long languageId, @PathVariable("idpos") long positionId){
+        return testService.findAllByLangAndPos(languageId, positionId);
     }
 
     @GetMapping("/position/{id}")

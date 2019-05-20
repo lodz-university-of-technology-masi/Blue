@@ -157,12 +157,14 @@
       }
     },
     mounted() {
+      this.getTests()
       this.totalRows = this.items.length
     },
     methods: {
-      getLanguages: function() {
+      getTests: function() {
         this.$http({
-          url: 'http://localhost:8088/api/tests',
+          url: 'http://localhost:8088/api/tests/solvelist/' +
+            this.$route.params.langId + '/' + this.$route.params.posId,
           headers: {
             'Authorization': localStorage.getItem('jwt')
           }

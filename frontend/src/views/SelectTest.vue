@@ -8,7 +8,7 @@
           v-for="role in availableLanguages"
           :key="role.id"
           :value="role.name"
-          @click="onSelectedLanguageOption = role.name"
+          @click="languageHandler(role.id, role.name)"
         >{{role.name}}</b-dropdown-item>
       </b-dropdown>
       <br />
@@ -18,11 +18,11 @@
           v-for="role in availablePositions"
           :key="role.id"
           :value="role.name"
-          @click="onSelectedPositionOption = role.name"
+          @click="positionHandler(role.id, role.name)"
         >{{role.name}}</b-dropdown-item>
       </b-dropdown>
     </b-form>
-    <button type="submit" @click="select">
+    <button type="submit" @click="redirectToSolve">
       Select
     </button>
   </div>
@@ -34,6 +34,8 @@
         return {
           onSelectedLanguageOption: "Choose language",
           onSelectedPositionOption: "Choose position",
+          onSelectedLanguageValue: 0,
+          onSelectedPositionValue: 0,
           availableLanguages: [],
           availablePositions: []
         };
@@ -53,10 +55,10 @@
           }).catch(function(error) {
             if(error.response.status === 403) {
               //TODO: Handle non authorized error
-              console.log("403 error")
+              console.log('403 error')
             } else if (error.response.status === 500) {
               //TODO: Handle backend error
-              console.log("Backend error")
+              console.log('Backend error')
             }
           }).then(function() {
             // this.loading = false;
@@ -69,32 +71,42 @@
               'Authorization': localStorage.getItem('jwt')
             }
           }).then(response => {
-            if(response.status === 200) {
-              console.log(response.data);
-              this.availablePositions = response.data;
+            if (response.status === 200) {
+              console.log(response.data)
+              this.availablePositions = response.data
             }
-          }).catch(function(error) {
-            if(error.response.status === 403) {
-              //TODO: Handle non authorized error
-              console.log("403 error")
+          }).catch (function(error) {
+            if (error.response.status === 403) {
+              // TODO: Handle non authorized error
+              console.log('403 error')
             } else if (error.response.status === 500) {
-              //TODO: Handle backend error
-              console.log("Backend error")
+              // TODO: Handle backend error
+              console.log('Backend error')
             }
-          }).then(function() {
+          }).then (function () {
             // this.loading = false;
           })
         },
-        select: function() {
-          //TODO: Handle no lang selection
-          //TODO: Handle no position selection
-          this.$router.push('solve_tests');
+        languageHandler: function (id, name) {
+          this.onSelectedLanguageValue = id
+          this.onSelectedLanguageOption = name
+        },
+        positionHandler: function (id, name) {
+          this.onSelectedPositionValue = id
+          this.onSelectedPositionOption = name
+        },
+        redirectToSolve: function () {
+          // TODO: Handle no lang selection
+          // TODO: Handle no position selection
+          console.log('language: ', this.onSelectedLanguageValue)
+          console.log('position: ', this.onSelectedPositionValue)
+          this.$router.push({ name: 'solve_tests', params: { langId: this.onSelectedLanguageValue, posId: this.onSelectedPositionValue } })
         }
       },
-    mounted () {
-      this.getLanguages(),
-      this.getPositions()
-  }
+      mounted () {
+        this.getLanguages()
+        this.getPositions()
+      }
 }
 </script>
 
