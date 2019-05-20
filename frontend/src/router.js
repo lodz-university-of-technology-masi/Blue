@@ -6,8 +6,8 @@ import Register from './views/Register.vue'
 import ManageRedactors from './views/ManageRedactors.vue'
 import ManagePositions from './views/ManagePositions.vue'
 import ManageTests from './views/ManageTests.vue'
-import SelectTest from './views/SelectTest.vue'
-import SolveTests from './views/SolveTests.vue'
+import SelectTest from "./views/SelectTest.vue";
+import SolveTests from "./views/SolveTests.vue";
 
 Vue.use(Router)
 
@@ -27,7 +27,7 @@ export default new Router({
       }
     },
     {
-      path: '/register',
+      path: "/register",
       name: 'register',
       component: Register,
       meta: {
@@ -55,10 +55,9 @@ export default new Router({
       component: SelectTest
     },
     {
-      path: '/solve_tests/:langId/:posId',
+      path: '/solve_tests',
       name: 'solve_tests',
-      component: SolveTests,
-      props: true
+      component: SolveTests
     }
   ]
 })
