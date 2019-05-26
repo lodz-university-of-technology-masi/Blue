@@ -8,7 +8,7 @@ import ManagePositions from './views/ManagePositions.vue'
 import ManageTests from './views/ManageTests.vue'
 import SelectTest from './views/SelectTest.vue'
 import SolveTests from './views/SolveTests.vue'
-import NotAuthorized from './views/NotAuthorized';
+import NotAuthorized from "./views/NotAuthorized";
 
 Vue.use(Router)
 

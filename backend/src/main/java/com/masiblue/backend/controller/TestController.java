@@ -116,4 +116,5 @@ public class TestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization exception", e);
         }
     }
+
 }
