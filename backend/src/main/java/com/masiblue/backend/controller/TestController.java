@@ -4,7 +4,6 @@ import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.Test;
 import com.masiblue.backend.model.TestCreateDTO;
 import com.masiblue.backend.model.TestInformationDTO;
-import com.masiblue.backend.model.TestSolveDTO;
 import com.masiblue.backend.service.TestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
