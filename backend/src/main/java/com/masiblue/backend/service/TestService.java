@@ -79,6 +79,10 @@ public class TestService {
         }
     }
 
+    public List<Test> findAllByLangAndPos(long idlang, long idpos){
+        return testRepository.findAllByLanguage_IdAndPosition_Id(idlang, idpos);
+    }
+
     public void addNewTest(TestCreateDTO testInformation, String redactorName) throws LanguageNotFoundException, RedactorNotFoundException, ApplicationUserNotFoundException, PositionNotFoundException, UserAccountNotFoundException {
         Language language = languageService.findById(testInformation.getLanguageId());
         ApplicationUser redactor = applicationUserService.findRedactorByUsername(redactorName);

@@ -87,6 +87,12 @@ public class TestController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR')")
+    @GetMapping("/solvelist/{idlang}/{idpos}")
+    public List listTestsForSolve(@PathVariable("idlang") long languageId, @PathVariable("idpos") long positionId){
+        return testService.findAllByLangAndPos(languageId, positionId);
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR','ROLE_USER')")
     @GetMapping("/position/{id}")
     public List listTestsForPosition(Authentication auth, @PathVariable("id") long positionId) {

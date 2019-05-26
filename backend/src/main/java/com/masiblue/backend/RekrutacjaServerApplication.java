@@ -1,10 +1,7 @@
 package com.masiblue.backend;
 
 import com.masiblue.backend.model.*;
-import com.masiblue.backend.service.ApplicationUserService;
-import com.masiblue.backend.service.LanguageService;
-import com.masiblue.backend.service.PositionService;
-import com.masiblue.backend.service.UserAccountService;
+import com.masiblue.backend.service.*;
 import org.apache.commons.codec.language.bm.Languages;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -36,6 +33,9 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 	@Autowired
 	LanguageService languageService;
 
+	@Autowired
+	TestService testService;
+
 	public static void main(String[] args) {
 		SpringApplication.run(RekrutacjaServerApplication.class, args);
 	}
@@ -52,10 +52,17 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 		UserAccount testAccount = new UserAccount("asia", "asia", test);
 		userAccountService.addNewAccount(testAccount);
 
+		Role redactorRole2 = new Role(RoleConstants.REDACTOR_ROLE);
+		ApplicationUser test2 = new ApplicationUser("Michał", "Milski", redactorRole2);
+		UserAccount testAccount2 = new UserAccount("michal", "michal", test2);
+		userAccountService.addNewAccount(testAccount2);
+
+
 		positionService.add("Java Developer");
 		positionService.add("C++ Developer");
 		languageService.add("Polski");
 		languageService.add("English");
+
 	}
 
 }
