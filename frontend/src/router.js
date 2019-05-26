@@ -8,6 +8,7 @@ import ManagePositions from './views/ManagePositions.vue'
 import ManageTests from './views/ManageTests.vue'
 import SelectTest from './views/SelectTest.vue'
 import SolveTests from './views/SolveTests.vue'
+import NotAuthorized from './views/NotAuthorized';
 
 Vue.use(Router)
 
@@ -59,6 +60,11 @@ export default new Router({
       name: 'solve_tests',
       component: SolveTests,
       props: true
+    },
+    {
+      path: '/not_authorized',
+      name: 'not_authorized',
+      component: NotAuthorized
     }
   ]
 })

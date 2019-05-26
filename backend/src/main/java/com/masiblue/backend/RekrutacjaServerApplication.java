@@ -63,15 +63,6 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 		languageService.add("Polski");
 		languageService.add("English");
 
-		testService.addNewTest(new TestCreateDTO("Test 100", 2, 1, 1));
-		testService.addNewTest(new TestCreateDTO("Test 101", 2, 2, 1));
-		testService.addNewTest(new TestCreateDTO("Test 102", 2, 1, 2));
-		testService.addNewTest(new TestCreateDTO("Test 103", 2, 2, 2));
-
-		testService.addNewTest(new TestCreateDTO("Test 200", 3, 1, 1));
-		testService.addNewTest(new TestCreateDTO("Test 201", 3, 2, 1));
-		testService.addNewTest(new TestCreateDTO("Test 202", 3, 1, 2));
-		testService.addNewTest(new TestCreateDTO("Test 203", 3, 2, 2));
 	}
 
 }

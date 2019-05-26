@@ -1,11 +1,16 @@
 package com.masiblue.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -44,6 +49,11 @@ public class Test {
 
     private LocalDateTime modificationDate;
 
-//
-//    private List<Question> questions;
+    @OneToMany(mappedBy = "test",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true)
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    @JsonProperty("questionIds")
+    private List<Question> questions;
 }
