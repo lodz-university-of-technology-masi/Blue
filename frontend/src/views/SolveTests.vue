@@ -82,7 +82,7 @@
       </template>-->
 
       <template slot="actions" slot-scope="row">
-        <b-button size="sm" @click="row.toggleDetails" class="mr-1">
+        <b-button size="sm" @click="solveTest(row)" class="mr-1">
           Solve
         </b-button>
       </template>
@@ -206,6 +206,10 @@
       onFiltered(filteredItems) {
         this.totalRows = filteredItems.length
         this.currentPage = 1
+      },
+      solveTest: function(kek) {
+        console.log(kek)
+        this.$router.push({ name: 'test_end', params: { id: test.id } })
       }
     }
   }

@@ -8,6 +8,7 @@ import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -105,6 +106,10 @@ public class TestService {
 
         validateNewTestData(oldTest, newTest);
         testRepository.save(newTest);
+    }
+
+    public TestLanguagePositionDTO getLanguageAndPositionById(long id) throws TestNotFoundException {
+        return new TestLanguagePositionDTO(findById(id));
     }
 
     private void validateNewTestData(Test oldTest, Test newTest) throws PositionNotFoundException, LanguageNotFoundException {

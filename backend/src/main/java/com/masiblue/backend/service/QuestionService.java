@@ -28,6 +28,7 @@ public class QuestionService {
     public boolean addNewQuestion(QuestionCreateDTO questionDTO, String name) throws UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException, QuestionTypeNotFoundException, AnswerListEmptyException, LanguageNotFoundException, EmptyQuestionContentException, TestNotFoundException {
         ApplicationUser user = applicationUserService.findByUsername(name);
         Test questionTest = testService.findById(questionDTO.getTestId());
+        questionDTO.setType(Type.W);
         if(questionTest.getAuthor() != user) {
             throw new NotOwnerException();
         }

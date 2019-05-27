@@ -87,7 +87,17 @@ public class TestController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR')")
+    @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR','ROLE_USER')")
+    @GetMapping("/langandpos/{id}")
+    public ResponseEntity getLanguageAndPositionById(@PathVariable("id") long id) {
+        try {
+            return new ResponseEntity<>(testService.getLanguageAndPositionById(id), HttpStatus.OK);
+        } catch (TestNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no test with this id", e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR','ROLE_USER')")
     @GetMapping("/solvelist/{idlang}/{idpos}")
     public List listTestsForSolve(@PathVariable("idlang") long languageId, @PathVariable("idpos") long positionId){
         return testService.findAllByLangAndPos(languageId, positionId);

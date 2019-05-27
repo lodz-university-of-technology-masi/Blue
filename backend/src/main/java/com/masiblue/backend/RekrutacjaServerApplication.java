@@ -12,8 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootApplication()
 @EnableJpaAuditing
@@ -35,6 +34,9 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 
 	@Autowired
 	TestService testService;
+
+	@Autowired
+	QuestionService questionService;
 
 	public static void main(String[] args) {
 		SpringApplication.run(RekrutacjaServerApplication.class, args);
@@ -62,6 +64,16 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 		positionService.add("C++ Developer");
 		languageService.add("Polski");
 		languageService.add("English");
+
+		testService.addNewTest(new TestCreateDTO("test 100", 1, 1), "asia");
+		testService.addNewTest(new TestCreateDTO("test 101", 1, 2), "asia");
+		testService.addNewTest(new TestCreateDTO("test 102", 1, 1), "michal");
+
+		HashSet<String> questionSet = new HashSet<String>();
+		questionSet.add("test");
+		//questionService.addNewQuestion(new QuestionCreateDTO(Type.O,1,1,"desc", questionSet),"asia");
+
+
 
 	}
 
