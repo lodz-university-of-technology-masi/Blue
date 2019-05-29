@@ -11,13 +11,11 @@ import java.util.Set;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final ApplicationUserService applicationUserService;
-    private final LanguageService languageService;
     private final TestService testService;
 
-    public QuestionService(QuestionRepository questionRepository, ApplicationUserService applicationUserService, LanguageService languageService, TestService testService) {
+    public QuestionService(QuestionRepository questionRepository, ApplicationUserService applicationUserService, TestService testService) {
         this.questionRepository = questionRepository;
         this.applicationUserService = applicationUserService;
-        this.languageService = languageService;
         this.testService = testService;
     }
 
@@ -25,7 +23,7 @@ public class QuestionService {
         return questionRepository.findById(id).orElseThrow(QuestionNotFoundException::new);
     }
 
-    public boolean addNewQuestion(QuestionCreateDTO questionDTO, String name) throws UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException, QuestionTypeNotFoundException, AnswerListEmptyException, LanguageNotFoundException, EmptyQuestionContentException, TestNotFoundException {
+    public boolean addNewQuestion(QuestionCreateDTO questionDTO, String name) throws UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException, QuestionTypeNotFoundException, AnswerListEmptyException, EmptyQuestionContentException, TestNotFoundException {
         ApplicationUser user = applicationUserService.findByUsername(name);
         Test questionTest = testService.findById(questionDTO.getTestId());
         if(questionTest.getAuthor() != user) {
@@ -36,7 +34,7 @@ public class QuestionService {
         return true;
     }
 
-    public void updateQuestion(QuestionCreateDTO questionDTO, long id, String name) throws QuestionNotFoundException, NotOwnerException, QuestionTypeNotFoundException, AnswerListEmptyException, LanguageNotFoundException, EmptyQuestionContentException, UserAccountNotFoundException, ApplicationUserNotFoundException, TestNotFoundException {
+    public void updateQuestion(QuestionCreateDTO questionDTO, long id, String name) throws QuestionNotFoundException, NotOwnerException, QuestionTypeNotFoundException, AnswerListEmptyException, EmptyQuestionContentException, UserAccountNotFoundException, ApplicationUserNotFoundException, TestNotFoundException {
         ApplicationUser user = applicationUserService.findByUsername(name);
         Test questionTest = testService.findById(questionDTO.getTestId());
         if(questionTest.getAuthor() != user) {
@@ -48,20 +46,19 @@ public class QuestionService {
         questionRepository.save(questionToSave);
     }
 
-    public void removeQuestion(long id, String name) throws QuestionNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException {
+    public void removeQuestion(long questionId, long testId, String name) throws QuestionNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException, TestNotFoundException {
         ApplicationUser user = applicationUserService.findByUsername(name);
-        Question oldQuestion = findById(id);
-        if(oldQuestion.getTest().getAuthor() != user) {
+        Question oldQuestion = findById(questionId);
+        Test test = testService.findById(testId);
+        if(test.getAuthor() != user) {
             throw new NotOwnerException();
         }
         questionRepository.delete(oldQuestion);
     }
 
 
-    private Question createFromDto(QuestionCreateDTO questionDto) throws AnswerListEmptyException, EmptyQuestionContentException, QuestionTypeNotFoundException, TestNotFoundException, LanguageNotFoundException {
+    private Question createFromDto(QuestionCreateDTO questionDto) throws AnswerListEmptyException, EmptyQuestionContentException, QuestionTypeNotFoundException {
         Question newQuestion = new Question();
-        newQuestion.setTest(testService.findById(questionDto.getTestId()));
-        newQuestion.setLanguage(languageService.findById(questionDto.getLanguageId()));
 
         Type questionType = questionDto.getType();
         if(questionType == null) {

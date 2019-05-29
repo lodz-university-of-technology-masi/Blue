@@ -49,9 +49,7 @@ public class Test {
 
     private LocalDateTime modificationDate;
 
-    @OneToMany(mappedBy = "test",
-        cascade = CascadeType.ALL,
-        orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("questionIds")

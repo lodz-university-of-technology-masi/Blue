@@ -46,8 +46,6 @@ public class QuestionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This type of question is not supported");
         } catch (AnswerListEmptyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This type of question requires list of possible answers");
-        } catch (LanguageNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Language not found");
         } catch (EmptyQuestionContentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Question has to have content");
         } catch (TestNotFoundException e) {
@@ -69,8 +67,6 @@ public class QuestionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This type of question is not supported");
         } catch (AnswerListEmptyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This type of question requires list of possible answers");
-        } catch (LanguageNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Language not found");
         } catch (EmptyQuestionContentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Question has to have content");
         } catch (QuestionNotFoundException e) {
@@ -81,10 +77,11 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasRole('REDACTOR')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity removeQuestion(Authentication auth, @PathVariable("id") long id) {
+    @DeleteMapping
+    public ResponseEntity removeQuestion(Authentication auth, @RequestParam("questionId") long questionId,
+                                         @RequestParam("testId") long testId) {
         try {
-            questionService.removeQuestion(id, auth.getName());
+            questionService.removeQuestion(questionId, testId, auth.getName());
             return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
         } catch (QuestionNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Question with this id does not exist");
@@ -92,6 +89,8 @@ public class QuestionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
         } catch (NotOwnerException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only owner can modify question");
+        } catch (TestNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Test with this id does not exist");
         }
     }
 }
