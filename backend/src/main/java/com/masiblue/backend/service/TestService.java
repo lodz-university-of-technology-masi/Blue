@@ -2,13 +2,15 @@ package com.masiblue.backend.service;
 
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.*;
-import com.masiblue.backend.repository.LanguageRepository;
 import com.masiblue.backend.repository.TestRepository;
-import org.springframework.security.access.AuthorizationServiceException;
-import org.springframework.security.core.GrantedAuthority;
+import com.masiblue.backend.utils.CsvQuestionModel;
+import com.masiblue.backend.utils.CsvReader;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -90,6 +92,56 @@ public class TestService {
 
         Test newTest = new Test(testInformation.getName(), position, redactor, language);
         testRepository.save(newTest);
+    }
+
+    public Test readTestFromCsv(String testName, String authorUsername, long positionId, String filePath)
+            throws LanguageAlreadExistsException, LanguageNotFoundException, UserAccountNotFoundException,
+            ApplicationUserNotFoundException, InvalidCsvException, PositionNotFoundException {
+
+        Test test = new Test();
+        test.setName(testName);
+        test.setCreationDate(LocalDateTime.now());
+
+        Position position = positionService.findById(positionId);
+        test.setPosition(position);
+
+        List<CsvQuestionModel> csvQuestions = CsvReader.readCsv(filePath);
+        if (csvQuestions.isEmpty()) {
+            throw new InvalidCsvException();
+        }
+        List<Question> questions = parseToQuestionModel(csvQuestions, test);
+        test.setQuestions(questions);
+
+        ApplicationUser author = applicationUserService.findByUsername(authorUsername);
+        test.setAuthor(author);
+
+        // assuming that all questions in given test are in the same language
+        String languageFromCsv = csvQuestions.get(0).getLanguage();
+        Language language = findOrCreateLanguage(languageFromCsv);
+        test.setLanguage(language);
+
+        return test;
+    }
+
+    private Language findOrCreateLanguage(String languageFromCsv) throws LanguageAlreadExistsException, LanguageNotFoundException {
+        try {
+            return languageService.findByName(languageFromCsv);
+        } catch (LanguageNotFoundException e) {
+            languageService.add(languageFromCsv);
+            return languageService.findByName(languageFromCsv);
+        }
+    }
+
+    private List<Question> parseToQuestionModel(List<CsvQuestionModel> csvQuestions, Test test) {
+        List<Question> questions = new ArrayList<>();
+        csvQuestions.forEach(q -> {
+            Question question = new Question();
+            question.setType(Enum.valueOf(Type.class, q.getType()));
+            question.setContent(q.getContent());
+            question.setPossibleAnswers(new HashSet<>(Arrays.asList(q.getPossibleAnswers())));
+            questions.add(question);
+        });
+        return questions;
     }
 
     public void update(long id, Test newTest, String username) throws TestNotFoundException, PositionNotFoundException, LanguageNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, AuthorizationException, NotOwnerException {
