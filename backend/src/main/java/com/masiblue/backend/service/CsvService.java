@@ -13,6 +13,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,10 @@ public class CsvService {
 
     private static final String ENGLISH_LANG = "EN";
     private static final String POLISH_LANG = "PL";
+    private static final String CSV_MEDIA_TYPE = "text/csv";
+    private static final char CSV_SEPARATOR = ';';
+    private static final String HEADER = "Content-Disposition";
+    private static final String HEADER_VALUE = "attachment; filename=test.csv";
 
     //    Numer;typ;język;treść;liczba możliwych odpowiedzi;[treść każdej odpowiedzi];
 
@@ -45,10 +50,10 @@ public class CsvService {
         return questions;
     }
 
-    private List<CsvQuestionModel> exportToCsv(Test test) {
+    private List<CsvQuestionModel> exportToCsvQuestions(Test test) {
         List<Question> questions = test.getQuestions();
         List<CsvQuestionModel> csvQuestions = new ArrayList<>();
-        int numberIterator = 0;
+        int numberIterator = 1;
         for (Question q : questions) {
             CsvQuestionModel csvQuestion = new CsvQuestionModel();
             csvQuestion.setNumber(numberIterator);
@@ -65,16 +70,19 @@ public class CsvService {
         return csvQuestions;
     }
 
-    public void writeToCsvFile(Test test, String filePath) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
-        List<CsvQuestionModel> questionsToWrite = exportToCsv(test);
+    void exportToCsvFile(Test test, HttpServletResponse response) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+        List<CsvQuestionModel> questionsToWrite = exportToCsvQuestions(test);
 
-        Writer writer = new FileWriter(filePath);
-        StatefulBeanToCsv<CsvQuestionModel> beanToCsv =
-                new StatefulBeanToCsvBuilder<CsvQuestionModel>(writer)
-                        .withSeparator(';')
-                        .build();
-        beanToCsv.write(questionsToWrite);
-        writer.close();
+        response.setContentType(CSV_MEDIA_TYPE);
+        response.setHeader(HEADER, HEADER_VALUE);
+
+        try (Writer writer = response.getWriter()) {
+            StatefulBeanToCsv<CsvQuestionModel> beanToCsv =
+                    new StatefulBeanToCsvBuilder<CsvQuestionModel>(writer)
+                            .withSeparator(CSV_SEPARATOR)
+                            .build();
+            beanToCsv.write(questionsToWrite);
+        }
     }
 
     private String parseLanguageToCsv(String langugeName) {

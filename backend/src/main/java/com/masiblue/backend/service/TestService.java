@@ -3,10 +3,13 @@ package com.masiblue.backend.service;
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.*;
 import com.masiblue.backend.repository.TestRepository;
-import com.masiblue.backend.model.CsvQuestionModel;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,6 +151,12 @@ public class TestService {
             questions.add(question);
         });
         return questions;
+    }
+
+    public void exportTestToCsv(long testId, HttpServletResponse response) throws CsvRequiredFieldEmptyException,
+            IOException, CsvDataTypeMismatchException, TestNotFoundException {
+        Test test = findById(testId);
+        csvService.exportToCsvFile(test, response);
     }
 
     public void update(long id, Test newTest, String username) throws TestNotFoundException, PositionNotFoundException, LanguageNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, AuthorizationException, NotOwnerException {

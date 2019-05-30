@@ -5,6 +5,8 @@ import com.masiblue.backend.model.Test;
 import com.masiblue.backend.model.TestCreateDTO;
 import com.masiblue.backend.model.TestInformationDTO;
 import com.masiblue.backend.service.TestService;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -135,4 +139,16 @@ public class TestController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_REDACTOR')")
+    @GetMapping(value = "csv/export/{testId}")
+    public void exportTest(@PathVariable long testId, HttpServletResponse response) throws IOException {
+        try {
+            testService.exportTestToCsv(testId, response);
+        } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_GATEWAY, "There was a backend error with parsing the test to the CSV file", e);
+        } catch (TestNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Test with this id does not exist", e);
+        }
+    }
 }
