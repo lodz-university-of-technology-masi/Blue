@@ -1,4 +1,4 @@
-package com.masiblue.backend.utils;
+package com.masiblue.backend.model;
 
 import com.opencsv.bean.CsvBindByPosition;
 import lombok.AllArgsConstructor;

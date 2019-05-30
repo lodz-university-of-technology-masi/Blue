@@ -6,10 +6,12 @@ import com.masiblue.backend.model.TestCreateDTO;
 import com.masiblue.backend.model.TestInformationDTO;
 import com.masiblue.backend.service.TestService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -114,6 +116,22 @@ public class TestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this token does not exist", e);
         } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization exception", e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_REDACTOR')")
+    @PostMapping(value = "/csv/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity importTest(Authentication auth, @RequestParam("testName") String testName,
+                                     @RequestParam("positionId") long positionId, @RequestParam("file") MultipartFile file) {
+        try {
+            testService.importTestFromCsv(testName, auth.getName(), positionId, file);
+            return new ResponseEntity<>("Test successfully imported.", HttpStatus.OK);
+        } catch (UserAccountNotFoundException | ApplicationUserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this token does not exist", e);
+        } catch (InvalidCsvException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid CSV file format", e);
+        } catch (PositionNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Position with this id does not exist", e);
         }
     }
 

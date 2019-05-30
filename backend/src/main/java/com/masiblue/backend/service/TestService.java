@@ -3,9 +3,9 @@ package com.masiblue.backend.service;
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.*;
 import com.masiblue.backend.repository.TestRepository;
-import com.masiblue.backend.utils.CsvQuestionModel;
-import com.masiblue.backend.utils.CsvReader;
+import com.masiblue.backend.model.CsvQuestionModel;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,12 +20,15 @@ public class TestService {
     private final ApplicationUserService applicationUserService;
     private final LanguageService languageService;
     private final PositionService positionService;
+    private final CsvService csvService;
 
-    public TestService(TestRepository testRepository, ApplicationUserService applicationUserService, LanguageService languageService, PositionService positionService) {
+    public TestService(TestRepository testRepository, ApplicationUserService applicationUserService,
+                       LanguageService languageService, PositionService positionService, CsvService csvService) {
         this.testRepository = testRepository;
         this.applicationUserService = applicationUserService;
         this.languageService = languageService;
         this.positionService = positionService;
+        this.csvService = csvService;
     }
 
     public List<Test> findAll() {
@@ -94,9 +97,8 @@ public class TestService {
         testRepository.save(newTest);
     }
 
-    public Test readTestFromCsv(String testName, String authorUsername, long positionId, String filePath)
-            throws LanguageAlreadExistsException, LanguageNotFoundException, UserAccountNotFoundException,
-            ApplicationUserNotFoundException, InvalidCsvException, PositionNotFoundException {
+    public void importTestFromCsv(String testName, String authorUsername, long positionId, MultipartFile file)
+            throws ApplicationUserNotFoundException, InvalidCsvException, PositionNotFoundException, UserAccountNotFoundException {
 
         Test test = new Test();
         test.setName(testName);
@@ -105,7 +107,7 @@ public class TestService {
         Position position = positionService.findById(positionId);
         test.setPosition(position);
 
-        List<CsvQuestionModel> csvQuestions = CsvReader.readCsv(filePath);
+        List<CsvQuestionModel> csvQuestions = csvService.readCsvQuestions(file);
         if (csvQuestions.isEmpty()) {
             throw new InvalidCsvException();
         }
@@ -117,10 +119,14 @@ public class TestService {
 
         // assuming that all questions in given test are in the same language
         String languageFromCsv = csvQuestions.get(0).getLanguage();
-        Language language = findOrCreateLanguage(languageFromCsv);
-        test.setLanguage(language);
+        try {
+            Language language = findOrCreateLanguage(languageFromCsv);
+            test.setLanguage(language);
+        } catch (LanguageAlreadExistsException | LanguageNotFoundException e) {
+            throw new InvalidCsvException();
+        }
 
-        return test;
+        testRepository.save(test);
     }
 
     private Language findOrCreateLanguage(String languageFromCsv) throws LanguageAlreadExistsException, LanguageNotFoundException {
