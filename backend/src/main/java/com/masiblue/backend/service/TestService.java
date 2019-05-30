@@ -5,6 +5,7 @@ import com.masiblue.backend.model.*;
 import com.masiblue.backend.repository.TestRepository;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,20 +20,20 @@ import java.util.List;
 @Service
 public class TestService {
 
-    private final TestRepository testRepository;
-    private final ApplicationUserService applicationUserService;
-    private final LanguageService languageService;
-    private final PositionService positionService;
-    private final CsvService csvService;
+    @Autowired
+    private TestRepository testRepository;
 
-    public TestService(TestRepository testRepository, ApplicationUserService applicationUserService,
-                       LanguageService languageService, PositionService positionService, CsvService csvService) {
-        this.testRepository = testRepository;
-        this.applicationUserService = applicationUserService;
-        this.languageService = languageService;
-        this.positionService = positionService;
-        this.csvService = csvService;
-    }
+    @Autowired
+    private ApplicationUserService applicationUserService;
+
+    @Autowired
+    private LanguageService languageService;
+
+    @Autowired
+    private PositionService positionService;
+
+    @Autowired
+    private CsvService csvService;
 
     public List<Test> findAll() {
         return testRepository.findAll();
