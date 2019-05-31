@@ -1,19 +1,20 @@
 package com.masiblue.backend;
 
-import com.masiblue.backend.model.*;
-import com.masiblue.backend.service.*;
-import org.apache.commons.codec.language.bm.Languages;
+import com.masiblue.backend.model.ApplicationUser;
+import com.masiblue.backend.model.Role;
+import com.masiblue.backend.model.RoleConstants;
+import com.masiblue.backend.model.UserAccount;
+import com.masiblue.backend.service.LanguageService;
+import com.masiblue.backend.service.PositionService;
+import com.masiblue.backend.service.TestService;
+import com.masiblue.backend.service.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @SpringBootApplication()
 @EnableJpaAuditing
@@ -48,8 +49,8 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 		userAccountService.addNewAccount(adminAccount);
 
 		Role redactorRole = new Role(RoleConstants.REDACTOR_ROLE);
-		ApplicationUser test = new ApplicationUser("Justyna", "Michalska", redactorRole);
-		UserAccount testAccount = new UserAccount("asia", "asia", test);
+		ApplicationUser testApplicationUser = new ApplicationUser("Justyna", "Michalska", redactorRole);
+		UserAccount testAccount = new UserAccount("asia", "asia", testApplicationUser);
 		userAccountService.addNewAccount(testAccount);
 
 		Role redactorRole2 = new Role(RoleConstants.REDACTOR_ROLE);
@@ -62,7 +63,5 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 		positionService.add("C++ Developer");
 		languageService.add("Polski");
 		languageService.add("English");
-
 	}
-
 }

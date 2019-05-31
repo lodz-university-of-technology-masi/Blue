@@ -6,9 +6,7 @@ import com.masiblue.backend.model.Language;
 import com.masiblue.backend.repository.LanguageRepository;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LanguageService {
@@ -43,5 +41,9 @@ public class LanguageService {
 
     public Language findById(long languageId) throws LanguageNotFoundException {
         return languageRepository.findById(languageId).orElseThrow(LanguageNotFoundException::new);
+    }
+
+    public Language findByName(String languageName) throws LanguageNotFoundException {
+        return languageRepository.findByName(languageName).orElseThrow(LanguageNotFoundException::new);
     }
 }

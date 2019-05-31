@@ -10,4 +10,9 @@ public class TestCreateDTO {
     private String name;
     private long positionId;
     private long languageId;
+
+    public TestCreateDTO(String name, long positionId) {
+        this.name = name;
+        this.positionId = positionId;
+    }
 }

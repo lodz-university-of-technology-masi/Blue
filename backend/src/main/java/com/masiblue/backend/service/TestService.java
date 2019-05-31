@@ -2,29 +2,38 @@ package com.masiblue.backend.service;
 
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.*;
-import com.masiblue.backend.repository.LanguageRepository;
 import com.masiblue.backend.repository.TestRepository;
-import org.springframework.security.access.AuthorizationServiceException;
-import org.springframework.security.core.GrantedAuthority;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collection;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
 public class TestService {
 
-    private final TestRepository testRepository;
-    private final ApplicationUserService applicationUserService;
-    private final LanguageService languageService;
-    private final PositionService positionService;
+    @Autowired
+    private TestRepository testRepository;
 
-    public TestService(TestRepository testRepository, ApplicationUserService applicationUserService, LanguageService languageService, PositionService positionService) {
-        this.testRepository = testRepository;
-        this.applicationUserService = applicationUserService;
-        this.languageService = languageService;
-        this.positionService = positionService;
-    }
+    @Autowired
+    private ApplicationUserService applicationUserService;
+
+    @Autowired
+    private LanguageService languageService;
+
+    @Autowired
+    private PositionService positionService;
+
+    @Autowired
+    private CsvService csvService;
 
     public List<Test> findAll() {
         return testRepository.findAll();
@@ -90,6 +99,65 @@ public class TestService {
 
         Test newTest = new Test(testInformation.getName(), position, redactor, language);
         testRepository.save(newTest);
+    }
+
+    public void importTestFromCsv(TestCreateDTO testCreateDTO, String authorUsername, MultipartFile file)
+            throws ApplicationUserNotFoundException, InvalidCsvException, PositionNotFoundException, UserAccountNotFoundException {
+
+        Test test = new Test();
+        test.setName(testCreateDTO.getName());
+        test.setCreationDate(LocalDateTime.now());
+
+        Position position = positionService.findById(testCreateDTO.getPositionId());
+        test.setPosition(position);
+
+        List<CsvQuestionModel> csvQuestions = csvService.readCsvQuestions(file);
+        if (csvQuestions.isEmpty()) {
+            throw new InvalidCsvException();
+        }
+        List<Question> questions = parseToQuestionModel(csvQuestions, test);
+        test.setQuestions(questions);
+
+        ApplicationUser author = applicationUserService.findByUsername(authorUsername);
+        test.setAuthor(author);
+
+        // assuming that all questions in given test are in the same language
+        String languageFromCsv = csvQuestions.get(0).getLanguage();
+        try {
+            Language language = findOrCreateLanguage(languageFromCsv);
+            test.setLanguage(language);
+        } catch (LanguageAlreadExistsException | LanguageNotFoundException e) {
+            throw new InvalidCsvException();
+        }
+
+        testRepository.save(test);
+    }
+
+    private Language findOrCreateLanguage(String languageFromCsv) throws LanguageAlreadExistsException, LanguageNotFoundException {
+        try {
+            return languageService.findByName(languageFromCsv);
+        } catch (LanguageNotFoundException e) {
+            languageService.add(languageFromCsv);
+            return languageService.findByName(languageFromCsv);
+        }
+    }
+
+    private List<Question> parseToQuestionModel(List<CsvQuestionModel> csvQuestions, Test test) {
+        List<Question> questions = new ArrayList<>();
+        csvQuestions.forEach(q -> {
+            Question question = new Question();
+            question.setType(Enum.valueOf(Type.class, q.getType()));
+            question.setContent(q.getContent());
+            question.setPossibleAnswers(new HashSet<>(Arrays.asList(q.getPossibleAnswers())));
+            questions.add(question);
+        });
+        return questions;
+    }
+
+    public void exportTestToCsv(long testId, HttpServletResponse response) throws CsvRequiredFieldEmptyException,
+            IOException, CsvDataTypeMismatchException, TestNotFoundException {
+        Test test = findById(testId);
+        csvService.exportToCsvFile(test, response);
     }
 
     public void update(long id, Test newTest, String username) throws TestNotFoundException, PositionNotFoundException, LanguageNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, AuthorizationException, NotOwnerException {

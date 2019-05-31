@@ -46,8 +46,6 @@ public class QuestionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This type of question is not supported");
         } catch (AnswerListEmptyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This type of question requires list of possible answers");
-        } catch (LanguageNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Language not found");
         } catch (EmptyQuestionContentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Question has to have content");
         } catch (TestNotFoundException e) {
@@ -69,8 +67,6 @@ public class QuestionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This type of question is not supported");
         } catch (AnswerListEmptyException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This type of question requires list of possible answers");
-        } catch (LanguageNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Language not found");
         } catch (EmptyQuestionContentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Question has to have content");
         } catch (QuestionNotFoundException e) {
@@ -92,6 +88,8 @@ public class QuestionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
         } catch (NotOwnerException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only owner can modify question");
+        } catch (TestNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Test with this id does not exist");
         }
     }
 }
