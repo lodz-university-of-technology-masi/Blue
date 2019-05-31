@@ -128,7 +128,8 @@ public class TestController {
     public ResponseEntity importTest(Authentication auth, @RequestParam("testName") String testName,
                                      @RequestParam("positionId") long positionId, @RequestParam("file") MultipartFile file) {
         try {
-            testService.importTestFromCsv(testName, auth.getName(), positionId, file);
+            TestCreateDTO testCreateDTO = new TestCreateDTO(testName, positionId);
+            testService.importTestFromCsv(testCreateDTO, auth.getName(), file);
             return new ResponseEntity<>("Test successfully imported.", HttpStatus.OK);
         } catch (UserAccountNotFoundException | ApplicationUserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this token does not exist", e);

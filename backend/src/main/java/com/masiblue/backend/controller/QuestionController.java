@@ -77,11 +77,10 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasRole('REDACTOR')")
-    @DeleteMapping
-    public ResponseEntity removeQuestion(Authentication auth, @RequestParam("questionId") long questionId,
-                                         @RequestParam("testId") long testId) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity removeQuestion(Authentication auth, @PathVariable("id") long id) {
         try {
-            questionService.removeQuestion(questionId, testId, auth.getName());
+            questionService.removeQuestion(id, auth.getName());
             return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
         } catch (QuestionNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Question with this id does not exist");

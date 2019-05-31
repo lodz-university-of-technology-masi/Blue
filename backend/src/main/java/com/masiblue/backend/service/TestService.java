@@ -101,14 +101,14 @@ public class TestService {
         testRepository.save(newTest);
     }
 
-    public void importTestFromCsv(String testName, String authorUsername, long positionId, MultipartFile file)
+    public void importTestFromCsv(TestCreateDTO testCreateDTO, String authorUsername, MultipartFile file)
             throws ApplicationUserNotFoundException, InvalidCsvException, PositionNotFoundException, UserAccountNotFoundException {
 
         Test test = new Test();
-        test.setName(testName);
+        test.setName(testCreateDTO.getName());
         test.setCreationDate(LocalDateTime.now());
 
-        Position position = positionService.findById(positionId);
+        Position position = positionService.findById(testCreateDTO.getPositionId());
         test.setPosition(position);
 
         List<CsvQuestionModel> csvQuestions = csvService.readCsvQuestions(file);
