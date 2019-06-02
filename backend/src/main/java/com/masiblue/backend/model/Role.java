@@ -1,10 +1,7 @@
 package com.masiblue.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -15,6 +12,7 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Role {
 
     public Role(String name) {

@@ -1,9 +1,6 @@
 package com.masiblue.backend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,6 +9,7 @@ import javax.persistence.*;
 @EqualsAndHashCode(exclude = "role")
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class ApplicationUser {
 
     public ApplicationUser(String firstName, String lastName, Role role) {

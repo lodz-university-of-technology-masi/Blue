@@ -8,9 +8,12 @@ import ManagePositions from './views/ManagePositions.vue'
 import ManageTests from './views/ManageTests.vue'
 import SelectTest from './views/SelectTest.vue'
 import SolveTests from './views/SolveTests.vue'
+import ManageTest from './views/ManageTest.vue'
 import NotAuthorized from "./views/NotAuthorized";
+import NotFound from "./views/NotFound";
+import Error from "./views/Error"
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
@@ -56,6 +59,11 @@ export default new Router({
       component: SelectTest
     },
     {
+      path: '/manage_test/:testId',
+      name: 'manage_test',
+      component: ManageTest
+    },
+    {
       path: '/solve_tests/:langId/:posId',
       name: 'solve_tests',
       component: SolveTests,
@@ -65,6 +73,16 @@ export default new Router({
       path: '/not_authorized',
       name: 'not_authorized',
       component: NotAuthorized
+    },
+    {
+      path: '/error',
+      name: 'error',
+      component: Error
+    },
+    {
+      path: "*",
+      name: 'not_found',
+      component: NotFound
     }
   ]
 })

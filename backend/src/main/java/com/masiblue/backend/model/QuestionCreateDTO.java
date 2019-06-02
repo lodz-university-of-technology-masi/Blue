@@ -9,7 +9,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class QuestionCreateDTO {
     private Type type;
-    private long languageId;
     private long testId;
     private String content;
     private Set<String> possibleAnswers;
