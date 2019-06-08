@@ -70,7 +70,7 @@
     <!--DELETE TEST MODAL-->
     <div>
       <b-modal class="delete-modal" ok-variant="danger" v-model="deleteModalShow" hide-header>
-        Please confirm that you want to delete question
+        Please confirm that you want to delete test 
         <b>{{test.name}}</b>
         <div slot="modal-ok" @click="deleteTest(test.id)">Confirm</div>
       </b-modal>

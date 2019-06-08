@@ -76,7 +76,7 @@
 
     <div>
       <b-modal class="delete-modal" ok-variant="danger" v-model="deleteModalShow" hide-header>
-        Please confirm that you want to delete question
+        Please confirm that you want to delete question 
         <b>{{question.content}}</b>
         <div slot="modal-ok" @click="deleteQuestion(question.id)">Confirm</div>
       </b-modal>

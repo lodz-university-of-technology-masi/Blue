@@ -4,8 +4,14 @@
       <button
         type="button"
         @click="initNewTestModalValues"
-        class="margin-bottom btn btn-success btn-lg"
+        class="margin-bottom button-left-margin btn btn-success btn-lg"
       >Add new test</button>
+
+      <button
+        type="button"
+        @click="initImportTestModalValues"
+        class="margin-bottom button-left-margin btn btn-success btn-lg"
+      >Import test from .csv file</button>
     </div>
 
     <div>
@@ -58,10 +64,47 @@
         <div slot="modal-ok" @click="addTest">Save</div>
       </b-modal>
     </div>
+
+    <div>
+      <b-modal class="import-test-modal" v-model="importTestModalShow" title="Import new test from .csv file">
+        <div>
+
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Test name</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                key="TestName"
+                v-model="newTestName"
+                class="bottom-margin"
+                :title="'TestName'"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Position</label>
+            </b-col>
+            <b-col>
+              <b-form-select v-model="newTestPosition" :options="positionsOptions"></b-form-select>
+            </b-col>
+          </b-row>
+
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>File</label>
+            </b-col>
+            <b-col sm="9">
+              <input type="file" id="file" ref="file"/>
+            </b-col>
+          </b-row>
+        </div>
+        <div slot="modal-ok" @click="uploadTestFromCsv">Save</div>
+      </b-modal>
+    </div>
   </div>
-
-
-
 </template>
 
 <script>
@@ -75,6 +118,8 @@
     data: function() {
       return {
         addTestModalShow: false,
+      importTestModalShow: false,
+      file: '',
         tests: [],
         inputName: "",
         newTest: {
@@ -96,6 +141,34 @@
         this.newTestName = "";
         this.addTestModalShow = true;
       },
+    initImportTestModalValues: function() {
+      this.newTestName = "";
+      this.importTestModalShow = true;
+    },
+    uploadTestFromCsv(){
+    this.file = this.$refs.file.files[0];
+    let formData = new FormData();
+    formData.append('file', this.file);
+    formData.append('positionId', this.newTestPosition.id);
+    formData.append('testName', this.newTestName);
+
+    this.$http({
+        url: "api/tests/csv/import",
+        method: "POST",
+        headers: {
+          Authorization: localStorage.getItem("jwt")
+        },
+        data: formData
+      })
+        .then(response => {
+          if (response.status === 200) {
+            this.getTests();
+            this.files = '';
+          }
+        })
+        .catch(function(error) {})
+        .then(function() {});
+  },
       getTests: function() {
         this.$http({
           url: "/api/tests",
@@ -105,7 +178,7 @@
         })
           .then(response => {
             if (response.status === 200) {
-              this.tests = response.data;
+              this.tests = response.data.reverse();
             }
           })
           .catch(function(error) {})
@@ -212,9 +285,9 @@
     margin-bottom: 30px;
   }
 
-  .button-left-margin {
-    margin-left: 10px;
-  }
+.button-left-margin {
+  margin-left: 30px;
+}
 
   .bottom-margin {
     margin-bottom: 10px;
