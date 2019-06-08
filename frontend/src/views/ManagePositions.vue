@@ -6,6 +6,13 @@
         @click="initNewPositionModalValues"
         class="margin-bottom btn btn-success btn-lg"
       >Add new position</button>
+
+    <div>
+      <b-alert v-model="showAlert" variant="danger" show dismissible>
+        {{alertMessage}}
+      </b-alert>
+    </div>
+
       <ul id="positionsList">
         <li v-for="position in positions" :key="position.id">
           <PositionCard @refreshPositions="getPositions" :position="position"></PositionCard>
@@ -52,6 +59,8 @@ export default {
   },
   data: function() {
     return {
+      showAlert: false,
+      alertMessage: '',
       addPositionModalShow: false,
       positions: [],
       inputName: "",
@@ -94,8 +103,15 @@ export default {
         });
     },
     addPosition: function() {
+
+      if (this.inputName == null || this.inputName === ""){
+        this.alertMessage = 'Couldn\'t add the new position. Please check if you filled all the data corectly.';
+        this.showAlert = true;
+        return false;
+    }
       this.newPosition.name = this.inputName;
       this.newPosition.active = this.newActive;
+      let _this = this;
       this.$http({
         url: "/api/positions",
         method: "POST",
@@ -118,7 +134,12 @@ export default {
             console.log("403 error");
           } else if (error.response.status === 500) {
             //TODO: Handle backend error
+            _this.alertMessage = 'Couldn\'t add the new position - backend error';
+            _this.showAlert = true;
             console.log("Backend error");
+          } else {
+            _this.alertMessage = 'Couldn\'t add the new redactor';
+            _this.showAlert = true;
           }
         })
         .then(function() {

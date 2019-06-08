@@ -15,6 +15,12 @@
     </div>
 
     <div>
+      <b-alert v-model="showAlert" variant="danger" show dismissible>
+        {{alertMessage}}
+      </b-alert>
+    </div>
+
+    <div>
       <ul id="questionList">
         <li v-for="test in tests" :key="test.id">
           <TestCard @refreshTests="getTests" :test="test"
@@ -119,6 +125,8 @@
       return {
         addTestModalShow: false,
       importTestModalShow: false,
+      showAlert: false,
+      alertMessage: '',
       file: '',
         tests: [],
         inputName: "",
@@ -147,6 +155,14 @@
     },
     uploadTestFromCsv(){
     this.file = this.$refs.file.files[0];
+    
+    if(this.file == null || this.file.name.split(".").pop() != 'csv') { //check if file extension is csv
+      this.alertMessage = 'Uploaded file must be a .csv file!';
+      this.showAlert = true;
+      return false;
+    }
+
+    let _this = this;
     let formData = new FormData();
     formData.append('file', this.file);
     formData.append('positionId', this.newTestPosition.id);
@@ -164,10 +180,16 @@
           if (response.status === 200) {
             this.getTests();
             this.files = '';
+            _this.showAlert = false;
           }
         })
-        .catch(function(error) {})
-        .then(function() {});
+        .catch(function(error) {
+        })
+        .then(function() {
+          _this.alertMessage = 'Couldn\'t upload test from the file. ' +
+          '\nPlease check if you provided all the necessary data and that the format of csv data is correct.'
+          _this.showAlert = true;
+        });
   },
       getTests: function() {
         this.$http({
@@ -221,13 +243,15 @@
           .then(function() {});
       },
       addTest: function() {
+        let _this = this;
         this.newTest.name = this.newTestName;
         this.newTest.positionId = this.newTestPosition.id;
         this.newTest.languageId = this.newTestLanguage.id;
         if(this.newTest.name == null || this.newTestName === "" || this.newTest.positionId == null
           || this.newTest.languageId == null) {
           //TODO: Pop some modal that values were wrong?
-          console.log("error");
+          this.alertMessage = 'Couldn\'t add the new test. Please check if you provided all the necessary data!';
+          this.showAlert = true;
           return;
         }
         this.$http({
@@ -242,11 +266,15 @@
         })
           .then(response => {
             if (response.status === 200) {
+              _this.showAlert = false;
               this.getTests();
             }
           })
           .catch(function(error) {})
-          .then(function() {});
+          .then(function() {
+          _this.alertMessage = 'Couldn\'t add the new test';
+          _this.showAlert = true;
+          });
       },
       deleteTest: function(test) {
         console.log(localStorage.getItem("jwt"));
@@ -260,11 +288,15 @@
         })
           .then(response => {
             if (response.status === 200) {
+              _this.showAlert = false;
               this.$emit("refreshTests");
             }
           })
           .catch(function(error) {})
-          .then(function() {});
+          .then(function() {
+          _this.alertMessage = 'Couldn\'t delete the test';
+          _this.showAlert = true;
+          });
       }
     },
     mounted: function() {

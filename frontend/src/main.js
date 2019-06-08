@@ -26,7 +26,7 @@ Axios.interceptors.response.use(response => {
   } else if (error.response.status === 403) {
     router.push('/not_authorized');
     return Promise.reject(error);
-  } else {
+  } else if (error.response.status !== 400) {
     router.push('/error');
     return Promise.reject(error);
   }
