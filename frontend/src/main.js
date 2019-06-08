@@ -9,6 +9,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 
 
+
 Vue.prototype.$http = Axios;
 
 Vue.use(BootstrapVue);
@@ -26,6 +27,7 @@ Axios.interceptors.response.use(response => {
     router.push('/not_authorized');
     return Promise.reject(error);
   } else {
+    router.push('/error');
     return Promise.reject(error);
   }
 });

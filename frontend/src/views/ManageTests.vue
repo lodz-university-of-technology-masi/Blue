@@ -1,205 +1,222 @@
 <template>
-  <b-container fluid>
-    <!-- User Interface controls -->
-    <b-row>
-      <b-col md="6" class="my-1">
-        <b-form-group label-cols-sm="3" label="Filter" class="mb-0">
-          <b-input-group>
-            <b-form-input v-model="filter" placeholder="Type to Search"></b-form-input>
-            <b-input-group-append>
-              <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
-            </b-input-group-append>
-          </b-input-group>
-        </b-form-group>
-      </b-col>
+  <div>
+    <div>
+      <button
+        type="button"
+        @click="initNewTestModalValues"
+        class="margin-bottom btn btn-success btn-lg"
+      >Add new test</button>
+    </div>
 
-      <b-col md="6" class="my-1">
-        <b-form-group label-cols-sm="3" label="Sort" class="mb-0">
-          <b-input-group>
-            <b-form-select v-model="sortBy" :options="sortOptions">
-              <option slot="first" :value="null">-- none --</option>
-            </b-form-select>
-            <b-form-select v-model="sortDesc" :disabled="!sortBy" slot="append">
-              <option :value="false">Asc</option> <option :value="true">Desc</option>
-            </b-form-select>
-          </b-input-group>
-        </b-form-group>
-      </b-col>
+    <div>
+      <ul id="questionList">
+        <li v-for="test in tests" :key="test.id">
+          <TestCard @refreshTests="getTests" :test="test"
+                    :languagesOptions="languagesOptions"
+                    :positionsOptions="positionsOptions"></TestCard>
+        </li>
+      </ul>
+    </div>
 
-      <b-col md="6" class="my-1">
-        <b-form-group label-cols-sm="3" label="Sort direction" class="mb-0">
-          <b-input-group>
-            <b-form-select v-model="sortDirection" slot="append">
-              <option value="asc">Asc</option> <option value="desc">Desc</option>
-              <option value="last">Last</option>
-            </b-form-select>
-          </b-input-group>
-        </b-form-group>
-      </b-col>
 
-      <b-col md="6" class="my-1">
-        <b-form-group label-cols-sm="3" label="Per page" class="mb-0">
-          <b-form-select v-model="perPage" :options="pageOptions"></b-form-select>
-        </b-form-group>
-      </b-col>
-    </b-row>
+    <div>
+      <b-modal class="add-test-modal" v-model="addTestModalShow" title="Add new test">
+        <div>
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Name</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                key='TestName'
+                v-model="newTestName"
+                class="bottom-margin"
+                :title="'TestName'"
+              ></b-form-input>
+            </b-col>
+          </b-row>
 
-    <b-table
-      show-empty
-      stacked="md"
-      :items="items"
-      :fields="fields"
-      :current-page="currentPage"
-      :per-page="perPage"
-      :filter="filter"
-      :sort-by.sync="sortBy"
-      :sort-desc.sync="sortDesc"
-      :sort-direction="sortDirection"
-      @filtered="onFiltered"
-    >
-      <template slot="name" slot-scope="row">
-        {{ row.value}}
-      </template>
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Position</label>
+            </b-col>
+            <b-col>
+              <b-form-select v-model="newTestPosition" :options="positionsOptions"></b-form-select>
+            </b-col>
+          </b-row>
 
-      <template slot="author" slot-scope="row">
-        {{ row.value.first }} {{ row.value.last }}
-      </template>
 
-      <template slot="jobtitle" slot-scope="row">
-        {{ row.value}}
-      </template>
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Language</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-select v-model="newTestLanguage" :options="languagesOptions"></b-form-select>
+            </b-col>
+          </b-row>
+        </div>
+        <div slot="modal-ok" @click="addTest">Save</div>
+      </b-modal>
+    </div>
+  </div>
 
-      <template slot="actions" slot-scope="row">
-        <b-button size="sm" @click="row.toggleDetails" class="mr-1">
-          {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
-        </b-button>
-        <b-button size="sm" class="mr-1">
-          Edit
-        </b-button>
-        <b-button size="sm" class="mr-1">
-          Delete
-        </b-button>
-      </template>
 
-      <template slot="row-details" slot-scope="row">
-        <b-card>
-          <ul>
-            <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
-          </ul>
-        </b-card>
-      </template>
-    </b-table>
 
-    <b-row>
-      <b-col md="6" class="my-1">
-        <b-pagination
-          v-model="currentPage"
-          :total-rows="totalRows"
-          :per-page="perPage"
-          class="my-0"
-        ></b-pagination>
-      </b-col>
-    </b-row>
-
-    <b-modal :id="infoModal.id" :title="infoModal.title" ok-only @hide="resetInfoModal">
-      <pre>{{ infoModal.content }}</pre>
-    </b-modal>
-  </b-container>
 </template>
 
 <script>
+
+  import TestCard from "@/components/TestCard.vue";
+
   export default {
-    data() {
+    components: {
+      TestCard
+    },
+    data: function() {
       return {
-        items: [
-          { author: { first: 'Maciej', last: 'Liźniewicz' }, name: 'Test 1', job_title: 'Junior Java Developer', creation_date: '28-04-2019', date_modified: '30-04-2019'},
-          { author: { first: 'Maciej', last: 'Wyrzuc' }, name: 'Test 2', job_title: 'Web Designer', creation_date: '28-04-2019', date_modified: '30-04-2019'},
-          { author: { first: 'Joanna', last: 'Górczak' }, name: 'Test 3', job_title: 'Senior Test Engineer', creation_date: '25-04-2019', date_modified: '30-04-2019'},
-          { author: { first: 'Joanna', last: 'Górczak' }, name: 'Test 4', job_title: 'Junior Test Engineer', creation_date: '21-04-2019', date_modified: '30-04-2019'}, 
-          { author: { first: 'Jerzy', last: 'Pakuła' }, name: 'Test 5', job_title: 'Senior Java Developer', creation_date: '18-04-2019', date_modified: '30-04-2019'}, 
-          { author: { first: 'Maciej', last: 'Liźniewicz' }, name: 'Test 6', job_title: 'Junior Test Engineer', creation_date: '10-04-2019', date_modified: '30-04-2019'},  
-          { author: { first: 'Jerzy', last: 'Pakuła' }, name: 'Test 7', job_title: 'PHP Developer', creation_date: '27-04-2019', date_modified: '30-04-2019'}, 
-          { author: { first: 'Maciej', last: 'Wyrzuc' }, name: 'Test 8', job_title: 'Web Designer', creation_date: '29-04-2019', date_modified: '30-04-2019'},
-        ],
-        fields: [
-          { key: 'name', label: 'Test name', sortable: true, sortDirection: 'desc' },
-          { key: 'author', label: 'Author', sortable: true, class: 'text-center' },
-          { key: 'job_title', label: 'Job title', sortable: true, class: 'text-center' },
-          { key: 'actions', label: 'Actions' }
-        ],
-        totalRows: 1,
-        currentPage: 1,
-        perPage: 5,
-        pageOptions: [5, 10, 15],
-        sortBy: null,
-        sortDesc: false,
-        sortDirection: 'asc',
-        filter: null,
-        infoModal: {
-          id: 'info-modal',
-          title: '',
-          content: ''
-        }
+        addTestModalShow: false,
+        tests: [],
+        inputName: "",
+        newTest: {
+          name: "",
+          positionId: null,
+          languageId: null
+        },
+        languages: [],
+        positions: [],
+        languagesOptions: [],
+        positionsOptions: [],
+        newTestName: "",
+        newTestPosition: "",
+        newTestLanguage: "",
       }
-    },
-    computed: {
-      sortOptions() {
-        return this.fields
-          .filter(f => f.sortable)
-          .map(f => {
-            return { text: f.label, value: f.key }
-          })
-      }
-    },
-    mounted() {
-      this.totalRows = this.items.length
     },
     methods: {
+      initNewTestModalValues: function() {
+        this.newTestName = "";
+        this.addTestModalShow = true;
+      },
+      getTests: function() {
+        this.$http({
+          url: "/api/tests",
+          headers: {
+            Authorization: localStorage.getItem("jwt")
+          }
+        })
+          .then(response => {
+            if (response.status === 200) {
+              this.tests = response.data;
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
+      },
+      getPositions: function() {
+        this.$http({
+          url: "/api/positions",
+          headers: {
+            Authorization: localStorage.getItem("jwt")
+          }
+        })
+          .then(response => {
+            if (response.status === 200) {
+              this.positions = response.data.reverse();
+              this.positionsOptions = response.data.map(position => ({
+                'value': position, 'text': position.name
+              }));
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
+      },
       getLanguages: function() {
         this.$http({
-          url: 'http://localhost:8088/api/tests',
+          url: "/api/languages",
           headers: {
-            'Authorization': localStorage.getItem('jwt')
+            Authorization: localStorage.getItem("jwt")
           }
-        }).then(response => {
-          if(response.status === 200) {
-            console.log(response.data);
-            this.items = response.data.map( item => {
-              return{
-                author: {first: item.author.firstName,
-                  last: item.author.lastName},
-                name: item.name,
-                job_title: item.position.name,
-                creation_date: item.creationDate,
-                date_modified: item.modificationDate
-              }
-            });
-          }
-        }).catch(function(error) {
-          if(error.response.status === 403) {
-            //TODO: Handle non authorized error
-            console.log("403 error")
-          } else if (error.response.status === 500) {
-            //TODO: Handle backend error
-            console.log("Backend error")
-          }
-        }).then(function() {
-          // this.loading = false;
         })
+          .then(response => {
+            if (response.status === 200) {
+              this.languages = response.data.reverse();
+              this.languagesOptions = response.data.map(language => ({
+                'value': language, 'text': language.name
+              }));
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
       },
-      info(item, index, button) {
-        this.infoModal.title = `Row index: ${index}`
-        this.infoModal.content = JSON.stringify(item, null, 2)
-        this.$root.$emit('bv::show::modal', this.infoModal.id, button)
+      addTest: function() {
+        this.newTest.name = this.newTestName;
+        this.newTest.positionId = this.newTestPosition.id;
+        this.newTest.languageId = this.newTestLanguage.id;
+        if(this.newTest.name == null || this.newTestName === "" || this.newTest.positionId == null
+          || this.newTest.languageId == null) {
+          //TODO: Pop some modal that values were wrong?
+          console.log("error");
+          return;
+        }
+        this.$http({
+          url: "/api/tests",
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("jwt"),
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          data: JSON.stringify(this.newTest)
+        })
+          .then(response => {
+            if (response.status === 200) {
+              this.getTests();
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
       },
-      resetInfoModal() {
-        this.infoModal.title = ''
-        this.infoModal.content = ''
-      },
-      onFiltered(filteredItems) {
-        this.totalRows = filteredItems.length
-        this.currentPage = 1
+      deleteTest: function(test) {
+        console.log(localStorage.getItem("jwt"));
+        this.$http({
+          url: "/api/tests/" + test.id,
+          method: "DELETE",
+          headers: {
+            Authorization: localStorage.getItem("jwt"),
+            Accept: "application/json"
+          }
+        })
+          .then(response => {
+            if (response.status === 200) {
+              this.$emit("refreshTests");
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
       }
+    },
+    mounted: function() {
+      this.getTests();
+      this.getPositions();
+      this.getLanguages();
     }
-  }
+  };
 </script>
+
+<style>
+  ul {
+    vertical-align: middle;
+    align-items: center;
+  }
+
+  .margin-bottom {
+    margin-bottom: 30px;
+  }
+
+  .button-left-margin {
+    margin-left: 10px;
+  }
+
+  .bottom-margin {
+    margin-bottom: 10px;
+  }
+</style>

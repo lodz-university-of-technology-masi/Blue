@@ -3,37 +3,35 @@ package com.masiblue.backend.service;
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.*;
 import com.masiblue.backend.repository.TestRepository;
+import org.springframework.stereotype.Service;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 @Service
 public class TestService {
 
-    @Autowired
-    private TestRepository testRepository;
+    private final TestRepository testRepository;
+    private final ApplicationUserService applicationUserService;
+    private final LanguageService languageService;
+    private final PositionService positionService;
+    private final CsvService csvService;
 
-    @Autowired
-    private ApplicationUserService applicationUserService;
-
-    @Autowired
-    private LanguageService languageService;
-
-    @Autowired
-    private PositionService positionService;
-
-    @Autowired
-    private CsvService csvService;
+    public TestService(TestRepository testRepository, ApplicationUserService applicationUserService, LanguageService languageService, PositionService positionService, CsvService csvService) {
+        this.testRepository = testRepository;
+        this.applicationUserService = applicationUserService;
+        this.languageService = languageService;
+        this.positionService = positionService;
+        this.csvService = csvService;
+    }
 
     public List<Test> findAll() {
         return testRepository.findAll();
@@ -160,38 +158,52 @@ public class TestService {
         csvService.exportToCsvFile(test, response);
     }
 
-    public void update(long id, Test newTest, String username) throws TestNotFoundException, PositionNotFoundException, LanguageNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, AuthorizationException, NotOwnerException {
+    public void update(long id, TestCreateDTO newTest, String username) throws TestNotFoundException, PositionNotFoundException, LanguageNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, AuthorizationException, NotOwnerException {
         Test oldTest = findById(id);
         ApplicationUser user = applicationUserService.findByUsername(username);
         if(user.getRole().getName().equals(RoleConstants.REDACTOR_ROLE)) {
-            if(oldTest.getId() != user.getId()) {
+            if(oldTest.getAuthor().getId() != user.getId()) {
                 throw new NotOwnerException();
             }
         } else if (!user.getRole().getName().equals(RoleConstants.MODERATOR_ROLE)) {
             throw new AuthorizationException();
         }
 
-        validateNewTestData(oldTest, newTest);
-        testRepository.save(newTest);
+        updateTestData(oldTest, newTest);
+        testRepository.save(oldTest);
     }
 
-    private void validateNewTestData(Test oldTest, Test newTest) throws PositionNotFoundException, LanguageNotFoundException {
-        newTest.setId(oldTest.getId());
-        if(newTest.getName() == null) {
-            newTest.setName(oldTest.getName());
+    private void updateTestData(Test oldTest, TestCreateDTO newTestData) throws PositionNotFoundException, LanguageNotFoundException {
+        if(newTestData.getName() != null) {
+            oldTest.setName(newTestData.getName());
         }
-        newTest.setAuthor(oldTest.getAuthor());
-        if(newTest.getPosition() == null) {
-            newTest.setPosition(oldTest.getPosition());
-        } else if (!positionService.exists(newTest.getPosition())) {
-            throw new PositionNotFoundException();
+        if(newTestData.getPositionId() != oldTest.getPosition().getId()) {
+            Position newPosition = positionService.findById(newTestData.getPositionId());
+            oldTest.setPosition(newPosition);
         }
-        if(newTest.getLanguage() == null) {
-            newTest.setLanguage(oldTest.getLanguage());
-        } else if (!languageService.exists(newTest.getLanguage())) {
-            throw new LanguageNotFoundException();
+        if(newTestData.getLanguageId() != oldTest.getLanguage().getId()) {
+            Language newLanguage = languageService.findById(newTestData.getLanguageId());
+            oldTest.setLanguage(newLanguage);
         }
-        newTest.setCreationDate(oldTest.getCreationDate());
-        newTest.setModificationDate(oldTest.getModificationDate());
+        oldTest.setCreationDate(oldTest.getCreationDate());
+        oldTest.setModificationDate(LocalDateTime.now());
+    }
+
+    public List getQuestionsForId(long testId, String username) throws TestNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException {
+        Test test = findById(testId);
+        ApplicationUser user = applicationUserService.findByUsername(username);
+        if(test.getAuthor().getId() != user.getId()) {
+            throw new NotOwnerException();
+        }
+        return test.getQuestions();
+    }
+
+    public void deleteTest(long testId, String username) throws TestNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException {
+        Test test = findById(testId);
+        ApplicationUser user = applicationUserService.findByUsername(username);
+        if(test.getAuthor().getId() != user.getId()) {
+            throw new NotOwnerException();
+        }
+        testRepository.delete(test);
     }
 }

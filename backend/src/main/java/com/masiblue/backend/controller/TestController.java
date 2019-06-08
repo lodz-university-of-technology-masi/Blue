@@ -3,7 +3,6 @@ package com.masiblue.backend.controller;
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.Test;
 import com.masiblue.backend.model.TestCreateDTO;
-import com.masiblue.backend.model.TestInformationDTO;
 import com.masiblue.backend.service.TestService;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
@@ -63,10 +62,9 @@ public class TestController {
 
     @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR')")
     @GetMapping("/{id}")
-    public TestInformationDTO listSingleTest(@PathVariable("id") long id) {
+    public Test listSingleTest(@PathVariable("id") long id) {
         try {
-            Test test = testService.findById(id);
-            return new TestInformationDTO(test);
+            return testService.findById(id);
         } catch (TestNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no test with this id", ex);
         }
@@ -74,7 +72,7 @@ public class TestController {
 
     @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR')")
     @PutMapping("/{id}")
-    public ResponseEntity updateSingleTest(Authentication auth, @PathVariable("id") long id, @RequestBody Test testInformation) {
+    public ResponseEntity updateSingleTest(Authentication auth, @PathVariable("id") long id, @RequestBody TestCreateDTO testInformation) {
         try {
             testService.update(id, testInformation, auth.getName());
             return new ResponseEntity<>("Successfully updated test", HttpStatus.OK);
@@ -94,6 +92,22 @@ public class TestController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteSingleTest(Authentication auth, @PathVariable("id") long id) {
+        try {
+            testService.deleteTest(id, auth.getName());
+            return new ResponseEntity<>("Successfully deleted test", HttpStatus.OK);
+        } catch (TestNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no test with this id", e);
+        } catch (UserAccountNotFoundException | ApplicationUserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this token does not exist", e);
+        } catch (NotOwnerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This redactor is not owner of this test", e);
+        }
+    }
+
+
+        @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR')")
     @GetMapping("/solvelist/{idlang}/{idpos}")
     public List listTestsForSolve(@PathVariable("idlang") long languageId, @PathVariable("idpos") long positionId){
         return testService.findAllByLangAndPos(languageId, positionId);
@@ -152,4 +166,18 @@ public class TestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Test with this id does not exist", e);
         }
     }
+    @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR','ROLE_USER')")
+    @GetMapping("/questions/{id}")
+    public List getQuestionForTest(Authentication auth, @PathVariable("id") long testId) {
+        try {
+            return testService.getQuestionsForId(testId, auth.getName());
+        } catch (TestNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no test with this id", e);
+        } catch (UserAccountNotFoundException | ApplicationUserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this token does not exist", e);
+        } catch (NotOwnerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This redactor is not owner of this test", e);
+        }
+    }
+
 }

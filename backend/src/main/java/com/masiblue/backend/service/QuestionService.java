@@ -3,25 +3,23 @@ package com.masiblue.backend.service;
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.*;
 import com.masiblue.backend.repository.QuestionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 @Service
 public class QuestionService {
+    private final QuestionRepository questionRepository;
+    private final ApplicationUserService applicationUserService;
+    private final LanguageService languageService;
+    private final TestService testService;
 
-    @Autowired
-    private QuestionRepository questionRepository;
-
-    @Autowired
-    private ApplicationUserService applicationUserService;
-
-    @Autowired
-    private TestService testService;
-
-    @Autowired
-    private LanguageService languageService;
+    public QuestionService(QuestionRepository questionRepository, ApplicationUserService applicationUserService, LanguageService languageService, TestService testService) {
+        this.questionRepository = questionRepository;
+        this.applicationUserService = applicationUserService;
+        this.languageService = languageService;
+        this.testService = testService;
+    }
 
     public Question findById(long id) throws QuestionNotFoundException {
         return questionRepository.findById(id).orElseThrow(QuestionNotFoundException::new);
@@ -30,7 +28,7 @@ public class QuestionService {
     public boolean addNewQuestion(QuestionCreateDTO questionDTO, String name) throws UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException, QuestionTypeNotFoundException, AnswerListEmptyException, EmptyQuestionContentException, TestNotFoundException {
         ApplicationUser user = applicationUserService.findByUsername(name);
         Test questionTest = testService.findById(questionDTO.getTestId());
-        if(questionTest.getAuthor() != user) {
+        if(questionTest.getAuthor().getId() != user.getId()) {
             throw new NotOwnerException();
         }
         Question questionToSave = createFromDto(questionDTO);
@@ -50,7 +48,7 @@ public class QuestionService {
         questionRepository.save(questionToSave);
     }
 
-    public void removeQuestion(long id, String name) throws QuestionNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException, TestNotFoundException {
+    public void removeQuestion(long id, String name) throws QuestionNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException {
         ApplicationUser user = applicationUserService.findByUsername(name);
         Question oldQuestion = findById(id);
         if(oldQuestion.getTest().getAuthor() != user) {

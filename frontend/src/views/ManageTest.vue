@@ -1,0 +1,200 @@
+<template>
+  <div>
+    <div>
+      <b-row v-if="testLoaded">
+        <b-col>{{test.name}}</b-col>
+        <b-col>{{test.position.name}}</b-col>
+        <b-col>{{test.language.name}}</b-col>
+      </b-row>
+    </div>
+
+    <div>
+      <button
+        type="button"
+        @click="initNewQuestionModalValues"
+        class="margin-bottom btn btn-success btn-lg"
+      >Add new question</button>
+      <ul id="questionList">
+        <li v-for="question in questions" :key="question.id">
+          <QuestionCard @refreshQuestions="getQuestions" :question="question"></QuestionCard>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <b-modal class="add-position-modal" v-model="addQuestionModalShow" title="Add new question">
+        <div>
+          <b-row class="all-margin">
+            <b-col sm="3">
+              <label>Question Type</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-select v-model="newQuestionType" :options="types"></b-form-select>
+            </b-col>
+          </b-row>
+            <b-row>
+              <label class="all-margin">Question Content</label>
+            </b-row>
+            <b-row>
+              <b-form-input v-model="newQuestionContent" class="all-margin"></b-form-input>
+            </b-row>
+          <div v-show="newQuestionType === 'W'">
+            <b-row>
+              <label class="all-margin" >Select amount of answers</label>
+            </b-row>
+            <b-row>
+              <b-form-select v-model="questionCount" :options="[1,2,3,4,5]" class="all-margin"></b-form-select>
+            </b-row>
+            <b-row>
+              <label class="all-margin" >Question answers</label>
+            </b-row>
+            <b-row v-for="i in questionCount">
+              <b-form-input v-model="newQuestionAnswers[i]" class="all-margin"></b-form-input>
+            </b-row>
+          </div>
+          <div v-show="newQuestionType === 'S'">
+            <b-row>
+              <label class="all-margin" >Select minimum</label>
+            </b-row>
+            <b-row>
+              <b-form-input v-model="newQuestionAnswers[0]" class="all-margin"></b-form-input>
+            </b-row>
+            <b-row>
+              <label class="all-margin" >Select maxiumum</label>
+            </b-row>
+            <b-row>
+              <b-form-input v-model="newQuestionAnswers[1]" class="all-margin"></b-form-input>
+            </b-row>
+          </div>
+
+        </div>
+        <div @click="addQuestion" slot="modal-ok">Save</div>
+      </b-modal>
+    </div>
+  </div>
+</template>
+
+<script>
+  import QuestionCard from "@/components/QuestionCard.vue";
+  export default {
+    components: {
+      QuestionCard
+    },
+    data: function() {
+      return {
+        testId: "",
+        testLoaded: false,
+        test: "",
+        addQuestionModalShow: false,
+        questions: [],
+        newQuestionType: "",
+        newQuestionContent: "",
+        newQuestionAnswers: [],
+        newQuestion: {
+          type: "",
+          testId: "",
+          content: "",
+          possibleAnswers: []
+        },
+        types: [
+          {value: 'O', text: 'Open'},
+          {value: 'W', text: 'Choice'},
+          {value: 'S', text: 'Scale'},
+          {value: 'L', text: 'Numerical'},
+        ],
+        questionCount: 2,
+      };
+    },
+    methods: {
+      initNewQuestionModalValues: function() {
+        this.addQuestionModalShow = true;
+      },
+      getQuestions: function() {
+        this.$http({
+          url: "/api/tests/questions/" + this.testId,
+          headers: {
+            Authorization: localStorage.getItem("jwt")
+          }
+        })
+          .then(response => {
+            if (response.status === 200) {
+              this.questions = response.data;
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
+      },
+      addQuestion: function() {
+        this.newQuestion.type = this.newQuestionType;
+        this.newQuestion.testId = this.testId;
+        this.newQuestion.content = this.newQuestionContent;
+        this.newQuestion.possibleAnswers = this.newQuestionAnswers;
+        this.$http({
+          url: "/api/question",
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("jwt"),
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          data: JSON.stringify(this.newQuestion)
+        })
+          .then(response => {
+            if (response.status === 200) {
+              console.log("New question added!");
+              this.getQuestions();
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
+      },
+      getTest: function() {
+        this.$http({
+          url: "/api/tests/" + this.$route.params.testId,
+          method: "get",
+          headers: {
+            Authorization: localStorage.getItem("jwt"),
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+        })
+          .then(response => {
+            if (response.status === 200) {
+              this.test = response.data;
+              this.testLoaded = true
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
+      }
+    },
+    mounted: function() {
+      this.testId = this.$route.params.testId;
+      this.getTest();
+      this.getQuestions();
+    }
+  };
+</script>
+
+<style>
+  ul {
+    vertical-align: middle;
+    align-items: center;
+  }
+
+  .margin-bottom {
+    margin-bottom: 30px;
+  }
+
+  .button-left-margin {
+    margin-left: 10px;
+  }
+
+  .bottom-margin {
+    margin-bottom: 10px;
+  }
+
+  .all-margin {
+    margin: 5px 10px 10px;
+  }
+</style>

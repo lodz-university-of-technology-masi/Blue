@@ -88,8 +88,6 @@ public class QuestionController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
         } catch (NotOwnerException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only owner can modify question");
-        } catch (TestNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Test with this id does not exist");
         }
     }
 }
