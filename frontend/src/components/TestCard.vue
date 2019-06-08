@@ -2,19 +2,18 @@
   <div>
     <div class="card bg-light mb-3 list-item">
       <div class="card-body">
-        <b-row no-gutters>
-          <b-col>
-            <h5
-              class="card-text question-text"
-            > {{test.name}}</h5>
+          <b-row no-gutters>
+          <b-col sm="3">
+            <h5 class="card-text question-text">{{test.name}}</h5>
           </b-col>
-          <b-col>
+          <b-col sm="1">
             <p class="card-title question-text">{{test.language.name}}</p>
           </b-col>
-          <b-col>
-          <p class="card-title question-text">{{test.position.name}}</p>
-        </b-col>
-          <b-col>
+          <b-col sm="3">
+            <p class="card-title question-text">{{test.position.name}}</p>
+          </b-col>
+          <b-col sm="5">
+            <b-button @click="exportTestToFile" class="button-left-margin" variant="secondary">Export</b-button>
             <b-button @click="initEditModalValues" class="button-left-margin" variant="primary">Edit</b-button>
             <b-button @click="editTestQuestions(test.id)" class="button-left-margin" variant="primary">Edit questions</b-button>
             <b-button
@@ -106,6 +105,28 @@
         this.updateTestName = this.test.name;
         this.updateTestLanguage = this.test.language;
         this.updateTestPosition = this.test.position;
+      },
+      exportTestToFile: function() {
+        this.$http({
+          url: "/api/tests/csv/export/" + this.test.id,
+          method: "GET",
+          headers: {
+            Authorization: localStorage.getItem("jwt")
+          },
+          responseType: 'blob'
+        })
+          .then(response => {
+            if (response.status === 200) {
+              const url = window.URL.createObjectURL(new Blob([response.data]));
+              const link = document.createElement('a');
+              link.href = url;
+              link.setAttribute('download', this.test.name + '.csv');
+              document.body.appendChild(link);
+              link.click();
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
       },
       saveEditModalValues: function(testId) {
         this.updateTest.name = this.updateTestName;
