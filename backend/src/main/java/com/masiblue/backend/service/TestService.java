@@ -147,6 +147,7 @@ public class TestService {
             question.setType(Enum.valueOf(Type.class, q.getType()));
             question.setContent(q.getContent());
             question.setPossibleAnswers(new HashSet<>(Arrays.asList(q.getPossibleAnswers())));
+            question.setTest(test);
             questions.add(question);
         });
         return questions;

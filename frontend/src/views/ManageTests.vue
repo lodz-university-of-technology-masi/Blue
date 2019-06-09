@@ -157,11 +157,15 @@
     this.file = this.$refs.file.files[0];
     
     if(this.file == null || this.file.name.split(".").pop() != 'csv') { //check if file extension is csv
-      this.alertMessage = 'Uploaded file must be a .csv file!';
-      this.showAlert = true;
-      return false;
+        this.alertMessage = 'Uploaded file must be a .csv file!';
+        this.showAlert = true;
+        return false;
+    } else if (this.newTestName == null || this.newTestName === '') {
+        this.alertMessage = 'Couldn\'t upload test from the file. ' +
+            '\nPlease check if you provided all the necessary data and that the format of csv data is correct.';
+        this.showAlert = true;
+        return false;
     }
-
     let _this = this;
     let formData = new FormData();
     formData.append('file', this.file);
@@ -252,7 +256,7 @@
           //TODO: Pop some modal that values were wrong?
           this.alertMessage = 'Couldn\'t add the new test. Please check if you provided all the necessary data!';
           this.showAlert = true;
-          return;
+          return false;
         }
         this.$http({
           url: "/api/tests",
