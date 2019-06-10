@@ -4,8 +4,20 @@
       <button
         type="button"
         @click="initNewTestModalValues"
-        class="margin-bottom btn btn-success btn-lg"
+        class="margin-bottom button-left-margin btn btn-success btn-lg"
       >Add new test</button>
+
+      <button
+        type="button"
+        @click="initImportTestModalValues"
+        class="margin-bottom button-left-margin btn btn-success btn-lg"
+      >Import test from .csv file</button>
+    </div>
+
+    <div>
+      <b-alert v-model="showAlert" variant="danger" show dismissible>
+        {{alertMessage}}
+      </b-alert>
     </div>
 
     <div>
@@ -58,10 +70,47 @@
         <div slot="modal-ok" @click="addTest">Save</div>
       </b-modal>
     </div>
+
+    <div>
+      <b-modal class="import-test-modal" v-model="importTestModalShow" title="Import new test from .csv file">
+        <div>
+
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Test name</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                key="TestName"
+                v-model="newTestName"
+                class="bottom-margin"
+                :title="'TestName'"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Position</label>
+            </b-col>
+            <b-col>
+              <b-form-select v-model="newTestPosition" :options="positionsOptions"></b-form-select>
+            </b-col>
+          </b-row>
+
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>File</label>
+            </b-col>
+            <b-col sm="9">
+              <input type="file" id="file" ref="file"/>
+            </b-col>
+          </b-row>
+        </div>
+        <div slot="modal-ok" @click="uploadTestFromCsv">Save</div>
+      </b-modal>
+    </div>
   </div>
-
-
-
 </template>
 
 <script>
@@ -75,6 +124,10 @@
     data: function() {
       return {
         addTestModalShow: false,
+      importTestModalShow: false,
+      showAlert: false,
+      alertMessage: '',
+      file: '',
         tests: [],
         inputName: "",
         newTest: {
@@ -96,6 +149,52 @@
         this.newTestName = "";
         this.addTestModalShow = true;
       },
+    initImportTestModalValues: function() {
+      this.newTestName = "";
+      this.importTestModalShow = true;
+    },
+    uploadTestFromCsv(){
+    this.file = this.$refs.file.files[0];
+    
+    if(this.file == null || this.file.name.split(".").pop() != 'csv') { //check if file extension is csv
+        this.alertMessage = 'Uploaded file must be a .csv file!';
+        this.showAlert = true;
+        return false;
+    } else if (this.newTestName == null || this.newTestName === '') {
+        this.alertMessage = 'Couldn\'t upload test from the file. ' +
+            '\nPlease check if you provided all the necessary data and that the format of csv data is correct.';
+        this.showAlert = true;
+        return false;
+    }
+    let _this = this;
+    let formData = new FormData();
+    formData.append('file', this.file);
+    formData.append('positionId', this.newTestPosition.id);
+    formData.append('testName', this.newTestName);
+
+    this.$http({
+        url: "api/tests/csv/import",
+        method: "POST",
+        headers: {
+          Authorization: localStorage.getItem("jwt")
+        },
+        data: formData
+      })
+        .then(response => {
+          if (response.status === 200) {
+            this.getTests();
+            this.files = '';
+            _this.showAlert = false;
+          }
+        })
+        .catch(function(error) {
+        })
+        .then(function() {
+          _this.alertMessage = 'Couldn\'t upload test from the file. ' +
+          '\nPlease check if you provided all the necessary data and that the format of csv data is correct.'
+          _this.showAlert = true;
+        });
+  },
       getTests: function() {
         this.$http({
           url: "/api/tests",
@@ -105,7 +204,7 @@
         })
           .then(response => {
             if (response.status === 200) {
-              this.tests = response.data;
+              this.tests = response.data.reverse();
             }
           })
           .catch(function(error) {})
@@ -148,14 +247,16 @@
           .then(function() {});
       },
       addTest: function() {
+        let _this = this;
         this.newTest.name = this.newTestName;
         this.newTest.positionId = this.newTestPosition.id;
         this.newTest.languageId = this.newTestLanguage.id;
         if(this.newTest.name == null || this.newTestName === "" || this.newTest.positionId == null
           || this.newTest.languageId == null) {
           //TODO: Pop some modal that values were wrong?
-          console.log("error");
-          return;
+          this.alertMessage = 'Couldn\'t add the new test. Please check if you provided all the necessary data!';
+          this.showAlert = true;
+          return false;
         }
         this.$http({
           url: "/api/tests",
@@ -169,11 +270,15 @@
         })
           .then(response => {
             if (response.status === 200) {
+              _this.showAlert = false;
               this.getTests();
             }
           })
           .catch(function(error) {})
-          .then(function() {});
+          .then(function() {
+          _this.alertMessage = 'Couldn\'t add the new test';
+          _this.showAlert = true;
+          });
       },
       deleteTest: function(test) {
         console.log(localStorage.getItem("jwt"));
@@ -187,11 +292,15 @@
         })
           .then(response => {
             if (response.status === 200) {
+              _this.showAlert = false;
               this.$emit("refreshTests");
             }
           })
           .catch(function(error) {})
-          .then(function() {});
+          .then(function() {
+          _this.alertMessage = 'Couldn\'t delete the test';
+          _this.showAlert = true;
+          });
       }
     },
     mounted: function() {
@@ -212,9 +321,9 @@
     margin-bottom: 30px;
   }
 
-  .button-left-margin {
-    margin-left: 10px;
-  }
+.button-left-margin {
+  margin-left: 30px;
+}
 
   .bottom-margin {
     margin-bottom: 10px;

@@ -53,12 +53,6 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
 		UserAccount testAccount = new UserAccount("asia", "asia", testApplicationUser);
 		userAccountService.addNewAccount(testAccount);
 
-		Role redactorRole2 = new Role(RoleConstants.REDACTOR_ROLE);
-		ApplicationUser test2 = new ApplicationUser("Michał", "Milski", redactorRole2);
-		UserAccount testAccount2 = new UserAccount("michal", "michal", test2);
-		userAccountService.addNewAccount(testAccount2);
-
-
 		positionService.add("Java Developer");
 		positionService.add("C++ Developer");
 		languageService.add("Polski");

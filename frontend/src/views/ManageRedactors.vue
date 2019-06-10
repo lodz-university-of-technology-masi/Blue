@@ -6,6 +6,13 @@
         @click="initNewRedactorModalValues"
         class="margin-bottom btn btn-success btn-lg"
       >Add new redactor</button>
+
+    <div>
+      <b-alert v-model="showAlert" variant="danger" show dismissible>
+        {{alertMessage}}
+      </b-alert>
+    </div>
+
       <ul id="subordinatesList">
         <li v-for="subordinate in subordinates" :key="subordinate.id">
           <SubordinateCard @refreshSubordinates="getSubordinates" :subordinate="subordinate"></SubordinateCard>
@@ -85,6 +92,8 @@ export default {
   },
   data: function() {
     return {
+      showAlert: false,
+      alertMessage: '',
       subordinates: [],
       loading: true,
       addRedactorModalShow: false,
@@ -136,6 +145,16 @@ export default {
         });
     },
     addRedactor: function() {
+      if (this.inputUsername == null || this.inputUsername === "" || 
+      this.inputPassword == null || this.inputPassword === "" || 
+      this.inputFirstName == null || this.inputFirstName === "" || 
+      this.inputLastName == null || this.inputLastName === "" ) {
+        this.alertMessage = 'Couldn\'t add the new redactor. Please check if you filled all the data corectly.';
+        this.showAlert = true;
+        return false;
+    }
+    
+      let _this = this;
       this.newRedactor.username = this.inputUsername;
       this.newRedactor.password = this.inputPassword;
       this.newRedactor.firstName = this.inputFirstName;
@@ -155,6 +174,7 @@ export default {
           if (response.status === 200) {
             console.log("New redactor added!");
             this.getSubordinates();
+            _this.showAlert = false;
           }
         })
         .catch(function(error) {
@@ -163,6 +183,8 @@ export default {
             console.log("403 error");
           } else if (error.response.status === 500) {
             //TODO: Handle backend error
+            _this.alertMessage = 'Couldn\'t add the new redactor';
+            _this.showAlert = true;
             console.log("Backend error");
           }
         })
