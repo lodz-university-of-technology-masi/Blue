@@ -26,7 +26,7 @@ public class ApplicationUser {
 
     private String lastName;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn
     private Role role;
 }
