@@ -8,7 +8,7 @@
        @click.left = "metricsLeftMouseClickHandler"
        @click.middle = "metricsMiddleMouseClickHandler"
        @click.right = "metricsRightMouseClickHandler">
-    <div id="nav">
+    <div id="nav" >
       <AppNavbar/>
     </div>
     <router-view/>
@@ -37,7 +37,7 @@ export default {
         distance: 0,
         timeElapsed: 0,
         browser: "",
-        fail: false
+        fail: 0
       },
       metricsObject: {
         browser: "",
@@ -46,7 +46,7 @@ export default {
         mouseClicks: "",
         time: "",
         distance: "",
-        isFailed: "",
+        isFailed: 0,
         errorCode: ""
       },
       window: {
@@ -66,17 +66,19 @@ export default {
     metricsGatherHandler: async function () {
       const el = this.$refs.capture;
       const options = {
+        type: 'dataURL'
       };
       let output = await this.$html2canvas(el, options);
       this.saveImage(output);
       if(!this.metrics.isStarted) {
         this.metrics.isStarted = true;
         this.metrics.startTime = new Date();
-        this.metrics.fail = false;
+        this.metrics.fail = 0;
       } else {
         this.metrics.isStarted = false;
         this.metrics.timeElapsed = Math.abs((new Date().getTime() - this.metrics.startTime.getTime()));
-        this.metrics.browser = navigator.userAgent[0];
+        this.metrics.browser = this.detectBrowser();
+        console.log(navigator.userAgent);
         this.saveMetrics();
       }
     },
@@ -84,9 +86,9 @@ export default {
       this.metrics.isStarted = false
     },
     metricsFailHandler: function() {
-      this.metrics.fail = true;
+      this.metrics.fail = 1;
       this.saveMetrics();
-      this.metrics.fail = false;
+      this.metrics.fail = 0;
     },
     metricsLeftMouseClickHandler: function(event) {
       this.metrics.leftMouseClickedCount += 1;
@@ -117,6 +119,7 @@ export default {
         method: "POST",
         headers: {
           Authorization: localStorage.getItem("jwt"),
+          "Content-type": "text/plain"
         },
         data: image
       }).then(response => {
@@ -132,18 +135,28 @@ export default {
       this.metricsObject.screenWidth = this.window.width;
       this.metricsObject.mouseClicks = this.metrics.leftMouseClickedCount + this.metrics.rightMouseClickedCount + this.metrics.middleMouseClickedCount;
       this.metricsObject.time = this.metrics.timeElapsed;
-
+      console.log(this.metricsObject);
       this.$http({
         url: "/api/metrics",
         method: "POST",
         headers: {
           Authorization: localStorage.getItem("jwt"),
+          "Content-Type" : 'application/json'
         },
         data: JSON.stringify(this.metricsObject)
       }).then(response => {
         console.log("Saved metrics data")
       }).then(function() {
       });
+    },
+    detectBrowser: function() {
+      if(this.$browserDetect.isIE) {
+        return 'I';
+      }
+      if(this.$browserDetect.isFirefox) {
+        return 'F';
+      }
+      return 'C';
     }
   }
 };

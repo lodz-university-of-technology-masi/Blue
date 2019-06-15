@@ -6,6 +6,7 @@ import com.masiblue.backend.repository.UsabilityDataRepository;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import sun.misc.BASE64Decoder;
+import java.nio.charset.StandardCharsets;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.List;
 public class UsabilityDataService {
 
     private static final String BASE64_HEADER = ";base64,";
-    private static final String SCREENSHOT_IMG_EXTENSION = ".jpg";
+    private static final String SCREENSHOT_IMG_EXTENSION = ".png";
     private UsabilityDataRepository usabilityDataRepository;
 
     public UsabilityDataService(UsabilityDataRepository usabilityDataRepository) {
@@ -32,10 +33,14 @@ public class UsabilityDataService {
         int userMeasurementNumber = allByUsername.size() + 1;
         usabilityData.setUserMeasurementNumber(userMeasurementNumber);
 
+        long timestamp = System.currentTimeMillis() / 1000;
+        usabilityData.setSaveTime(timestamp);
+
         usabilityDataRepository.save(usabilityData);
     }
 
     public String saveScreenshot(String userName, String decodedImg) throws IOException {
+
         if (decodedImg.contains(BASE64_HEADER)) {
             int index = decodedImg.lastIndexOf(BASE64_HEADER) + BASE64_HEADER.length();
             decodedImg = decodedImg.substring(index);
