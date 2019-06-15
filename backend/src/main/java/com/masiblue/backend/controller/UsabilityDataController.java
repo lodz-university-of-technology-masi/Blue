@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/metrics")
 public class UsabilityDataController {
@@ -30,5 +32,16 @@ public class UsabilityDataController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
         }
         return new ResponseEntity<>("Successfully added new usability data", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/screenshot")
+    public ResponseEntity<String> uploadScreenshot(Authentication auth, @RequestBody String img) {
+        String fileName;
+        try {
+            fileName = usabilityDataService.saveScreenshot(auth.getName(), img);
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect screenshot data format");
+        }
+        return new ResponseEntity<>(String.format("Successfully saved the screenshot as %s file", fileName), HttpStatus.OK);
     }
 }
