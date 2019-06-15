@@ -3,6 +3,8 @@ package com.masiblue.backend.service;
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.*;
 import com.masiblue.backend.repository.TestRepository;
+import com.masiblue.backend.translation.GoogleTranslator;
+import com.masiblue.backend.translation.Translator;
 import org.springframework.stereotype.Service;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
@@ -206,5 +208,21 @@ public class TestService {
             throw new NotOwnerException();
         }
         testRepository.delete(test);
+    }
+
+    public void translateTest(TranslateTestDTO translateTestDTO, String username) throws TestNotFoundException, UserAccountNotFoundException, ApplicationUserNotFoundException, NotOwnerException, LanguageNotFoundException, LanguageTranslationNotSupportedException, LanguageAlreadExistsException {
+        Test oldTest = findById(translateTestDTO.getId());
+        ApplicationUser user = applicationUserService.findByUsername(username);
+        Language newLanguage = languageService.findById(translateTestDTO.getLanguageId());
+        if(oldTest.getAuthor().getId() != user.getId()) {
+            throw new NotOwnerException();
+        }
+        if(oldTest.getLanguage() == newLanguage) {
+            throw new LanguageAlreadExistsException();
+        }
+        Translator translator = new GoogleTranslator();
+        Test newTest = translator.translateTest(oldTest, newLanguage);
+        newTest.setName(translateTestDTO.getTestName());
+        testRepository.save(newTest);
     }
 }

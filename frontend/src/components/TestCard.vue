@@ -14,6 +14,7 @@
           </b-col>
           <b-col sm="5">
             <b-button @click="exportTestToFile" class="button-left-margin" variant="secondary">Export</b-button>
+            <b-button @click="initTranslateModalValues" class="button-left-margin" variant="secondary">Translate</b-button>
             <b-button @click="initEditModalValues" class="button-left-margin" variant="primary">Edit</b-button>
             <b-button @click="editTestQuestions(test.id)" class="button-left-margin" variant="primary">Edit questions</b-button>
             <b-button
@@ -66,6 +67,36 @@
       </b-modal>
     </div>
 
+    <div>
+      <b-modal class="edit-modal" v-model="translateModalShow" title="Translate test">
+        <div>
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Translated test name</label>
+            </b-col>
+            <b-col sm="9">
+              <b-form-input
+                key='TestName'
+                v-model="testTranslatedName"
+                class="bottom-margin"
+                :title="'TestName'"
+              ></b-form-input>
+            </b-col>
+          </b-row>
+
+          <b-row class="bottom-margin">
+            <b-col sm="3">
+              <label>Language</label>
+            </b-col>
+            <b-col sm="9">
+              <label> Test will be translated to {{testTranslatedLanguage.name}}  </label>
+            </b-col>
+          </b-row>
+        </div>
+        <div slot="modal-ok" @click="translateTest">Translate</div>
+      </b-modal>
+    </div>
+
     <!--DELETE TEST MODAL-->
     <div>
       <b-modal class="delete-modal" ok-variant="danger" v-model="deleteModalShow" hide-header>
@@ -89,6 +120,7 @@
         return {
           editModalShow: false,
           deleteModalShow: false,
+          translateModalShow: false,
           updateTestName: "",
           updateTestLanguage: "",
           updateTestPosition: "",
@@ -96,7 +128,14 @@
             name: "",
             positionId: "",
             languageId: ""
-          }
+          },
+          translateTestObject: {
+            id: "",
+            languageId: "",
+            testName: ""
+          },
+          testTranslatedLanguage: "",
+          testTranslatedName: ""
         };
       },
     methods: {
@@ -105,6 +144,15 @@
         this.updateTestName = this.test.name;
         this.updateTestLanguage = this.test.language;
         this.updateTestPosition = this.test.position;
+      },
+      initTranslateModalValues: function() {
+        console.log(this.test.language)
+        console.log(this.languagesOptions)
+
+        this.testTranslatedLanguage = this.languagesOptions.find( e => e.value.name !== this.test.language.name);
+        this.testTranslatedLanguage = this.testTranslatedLanguage.value;
+        console.log(this.testTranslatedLanguage)
+        this.translateModalShow = !this.translateModalShow;
       },
       exportTestToFile: function() {
         this.$http({
@@ -132,7 +180,6 @@
         this.updateTest.name = this.updateTestName;
         this.updateTest.positionId = this.updateTestPosition.id;
         this.updateTest.languageId = this.updateTestLanguage.id;
-        console.log(this.updateTest);
         this.$http({
           url: "/api/tests/" + testId,
           method: "PUT",
@@ -172,6 +219,27 @@
       },
       editTestQuestions: function(testId) {
         this.$router.push('/manage_test/' + testId)
+      },
+      translateTest: function() {
+        this.translateTestObject.name = this.testTranslatedName;
+        this.translateTestObject.languageId = this.testTranslatedLanguage.id;
+        this.translateTestObject.id = this.test.id;
+
+        this.$http({
+          url: "/api/tests/translate",
+          method: "POST",
+          headers: {
+            Authorization: localStorage.getItem("jwt")
+          },
+          data: JSON.stringify(this.updateTest)
+        })
+          .then(response => {
+            if (response.status === 200) {
+              this.$emit("refreshTests");
+            }
+          })
+          .catch(function(error) {})
+          .then(function() {});
       }
     }
     };

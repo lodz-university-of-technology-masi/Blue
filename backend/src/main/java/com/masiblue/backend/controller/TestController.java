@@ -3,6 +3,7 @@ package com.masiblue.backend.controller;
 import com.masiblue.backend.exception.*;
 import com.masiblue.backend.model.Test;
 import com.masiblue.backend.model.TestCreateDTO;
+import com.masiblue.backend.model.TranslateTestDTO;
 import com.masiblue.backend.service.TestService;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
@@ -177,6 +178,27 @@ public class TestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this token does not exist", e);
         } catch (NotOwnerException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This redactor is not owner of this test", e);
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_REDACTOR','ROLE_MODERATOR','ROLE_USER')")
+    @PostMapping("/translate")
+    public ResponseEntity translateTest(Authentication auth, @RequestBody TranslateTestDTO translateTestDTO) {
+        try {
+            testService.translateTest(translateTestDTO, auth.getName());
+            return new ResponseEntity<>("Successfully created test", HttpStatus.OK);
+        } catch (TestNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no test with this id", e);
+        } catch (UserAccountNotFoundException | ApplicationUserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with this token does not exist", e);
+        } catch (NotOwnerException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This redactor is not owner of this test", e);
+        } catch (LanguageNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no such language", e);
+        } catch (LanguageTranslationNotSupportedException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This language is not supported by translation feature", e);
+        } catch (LanguageAlreadExistsException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot translate test to the same language", e);
         }
     }
 
