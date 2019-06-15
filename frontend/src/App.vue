@@ -1,5 +1,13 @@
 <template>
-  <div id="app">
+  <div id="app"
+       ref="capture"
+       tabindex="-1"
+       @keyup.shift.68="metricsGatherHandler"
+       @keyup.shift.87="metricsCancelHandler"
+       @keyup.shift.82="metricsFailHandler"
+       @click.left = "metricsLeftMouseClickHandler"
+       @click.middle = "metricsMiddleMouseClickHandler"
+       @click.right = "metricsRightMouseClickHandler">
     <div id="nav">
       <AppNavbar/>
     </div>
@@ -14,6 +22,129 @@ export default {
   name: "app",
   components: {
     AppNavbar
+  },
+  data() {
+    return {
+      currentMetricsTime: "",
+      metrics: {
+        startTime: "",
+        isStarted: false,
+        leftMouseClickedCount: 0,
+        middleMouseClickedCount: 0,
+        rightMouseClickedCount: 0,
+        lastX: 0,
+        lastY: 0,
+        distance: 0,
+        timeElapsed: 0,
+        browser: "",
+        fail: false
+      },
+      metricsObject: {
+        browser: "",
+        screenWidth: "",
+        screenHeight: "",
+        mouseClicks: "",
+        time: "",
+        distance: "",
+        isFailed: "",
+        errorCode: ""
+      },
+      window: {
+        width: 0,
+        height: 0
+      }
+    }
+  },
+  created() {
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.handleResize)
+  },
+  methods: {
+    metricsGatherHandler: async function () {
+      const el = this.$refs.capture;
+      const options = {
+      };
+      let output = await this.$html2canvas(el, options);
+      this.saveImage(output);
+      if(!this.metrics.isStarted) {
+        this.metrics.isStarted = true;
+        this.metrics.startTime = new Date();
+        this.metrics.fail = false;
+      } else {
+        this.metrics.isStarted = false;
+        this.metrics.timeElapsed = Math.abs((new Date().getTime() - this.metrics.startTime.getTime()));
+        this.metrics.browser = navigator.userAgent[0];
+        this.saveMetrics();
+      }
+    },
+    metricsCancelHandler: function () {
+      this.metrics.isStarted = false
+    },
+    metricsFailHandler: function() {
+      this.metrics.fail = true;
+      this.saveMetrics();
+      this.metrics.fail = false;
+    },
+    metricsLeftMouseClickHandler: function(event) {
+      this.metrics.leftMouseClickedCount += 1;
+      const xOffset = window.scrollX;
+      const yOffset = window.scrollY;
+      const currentX = event.clientX + xOffset;
+      const currentY = event.clientY + yOffset;
+      this.metrics.distance = this.calculateDistance(this.metrics.lastX, this.metrics.lastY, currentX, currentY)
+      this.metrics.lastX = currentX;
+      this.metrics.lastY = currentY;
+    },
+    metricsMiddleMouseClickHandler: function() {
+      this.metrics.middleMouseClickedCount += 1
+    },
+    metricsRightMouseClickHandler: function() {
+      this.metrics.rightMouseClickedCount += 1
+    },
+    handleResize: function() {
+      this.window.width = window.innerWidth;
+      this.window.height = window.innerHeight;
+    },
+    calculateDistance: function(x1, y1, x2, y2) {
+      return Math.ceil(Math.sqrt(Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2)));
+    },
+    saveImage: function(image) {
+      this.$http({
+        url: "/api/metrics/screenshot",
+        method: "POST",
+        headers: {
+          Authorization: localStorage.getItem("jwt"),
+        },
+        data: image
+      }).then(response => {
+        console.log("Saved screenshot")
+        }).then(function() {
+        });
+    },
+    saveMetrics: function() {
+      this.metricsObject.browser = this.metrics.browser;
+      this.metricsObject.distance = this.metrics.distance;
+      this.metricsObject.isFailed = this.metrics.fail;
+      this.metricsObject.screenHeight = this.window.height;
+      this.metricsObject.screenWidth = this.window.width;
+      this.metricsObject.mouseClicks = this.metrics.leftMouseClickedCount + this.metrics.rightMouseClickedCount + this.metrics.middleMouseClickedCount;
+      this.metricsObject.time = this.metrics.timeElapsed;
+
+      this.$http({
+        url: "/api/metrics",
+        method: "POST",
+        headers: {
+          Authorization: localStorage.getItem("jwt"),
+        },
+        data: JSON.stringify(this.metricsObject)
+      }).then(response => {
+        console.log("Saved metrics data")
+      }).then(function() {
+      });
+    }
   }
 };
 </script>
