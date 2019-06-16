@@ -12,7 +12,7 @@
             <p class="card-title question-text">{{question.content}}</p>
           </b-col>
           <b-col>
-            <b-button @click="initEditModalValues" class="button-left-margin" variant="primary">Edit</b-button>
+            <b-button @click="initEditModalValues()" class="button-left-margin" variant="primary">Edit</b-button>
             <b-button
               @click="deleteModalShow = !deleteModalShow"
               class="button-left-margin"
@@ -62,14 +62,14 @@
               <b-form-input v-model="questionAnswers[0]" class="all-margin"></b-form-input>
             </b-row>
             <b-row>
-              <label class="all-margin" >Select maxiumum</label>
+              <label class="all-margin" >Select maximum</label>
             </b-row>
             <b-row>
               <b-form-input v-model="questionAnswers[1]" class="all-margin"></b-form-input>
             </b-row>
           </div>
         </div>
-        <div slot="modal-ok" @click="saveEditModalValues">Save</div>
+        <div slot="modal-ok" @click="saveEditModalValues()">Save</div>
       </b-modal>
     </div>
 

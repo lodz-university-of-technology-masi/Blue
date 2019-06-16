@@ -12,7 +12,7 @@
             <p class="card-text subordinate-text">{{subordinate.role.name}}</p>
           </b-col>
           <b-col>
-            <b-button @click="initEditModalValues" class="button-left-margin" variant="primary">Edit</b-button>
+            <b-button @click="initEditModalValues()" class="button-left-margin" variant="primary">Edit</b-button>
             <b-button
               @click="deleteModalShow = !deleteModalShow"
               class="button-left-margin"
@@ -47,7 +47,7 @@
             </b-col>
           </b-row>
         </div>
-        <div slot="modal-ok" @click="saveEditModalValues">Save</div>
+        <div slot="modal-ok" @click="saveEditModalValues()">Save</div>
       </b-modal>
     </div>
 

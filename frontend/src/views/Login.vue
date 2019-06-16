@@ -44,9 +44,9 @@
     },
     methods : {
       handleSubmit(e){
-        let _this = this;
         e.preventDefault()
         if (this.password.length > 0) {
+          let _this = this;
           this.$http.post('http://localhost:8088/login', {
             username: this.username,
             password: this.password
@@ -74,8 +74,8 @@
               console.error(error.response);
               _this.alertMessage =
               "Incorrect login and/or password. Please try again.";
-            _this.showAlert = true;
-            return false;
+              _this.showAlert = true;
+              return false;
             });
         }
       }

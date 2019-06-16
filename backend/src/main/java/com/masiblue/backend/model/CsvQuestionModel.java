@@ -26,6 +26,6 @@ public class CsvQuestionModel {
     private int numberOfPossibleAnswers;
 
     @CsvBindByPosition(position = 5)
-    private String[] possibleAnswers;
+    private String possibleAnswers;
 
 }

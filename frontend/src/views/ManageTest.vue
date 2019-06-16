@@ -8,11 +8,11 @@
     <div>
       <button
         type="button"
-        @click="initNewQuestionModalValues"
+        @click="initNewQuestionModalValues()"
         class="margin-bottom btn btn-success btn-lg"
       >Add new question</button>
-      <b-button @click="goToWiki" class="margin-bottom button-left-margin btn btn-success btn-lg">Wiki</b-button>
-      <b-button @click="goToSynonyms" class="margin-bottom button-left-margin btn btn-success btn-lg">Synonyms</b-button>
+      <b-button @click="goToWiki()" class="margin-bottom button-left-margin btn btn-success btn-lg">Wiki</b-button>
+      <b-button @click="goToSynonyms()" class="margin-bottom button-left-margin btn btn-success btn-lg">Synonyms</b-button>
       <ul id="questionList">
         <li v-for="question in questions" :key="question.id">
           <QuestionCard @refreshQuestions="getQuestions" :question="question"></QuestionCard>
@@ -60,7 +60,7 @@
               <b-form-input v-model="newQuestionAnswers[0]" class="all-margin"></b-form-input>
             </b-row>
             <b-row>
-              <label class="all-margin" >Select maxiumum</label>
+              <label class="all-margin" >Select maximum</label>
             </b-row>
             <b-row>
               <b-form-input v-model="newQuestionAnswers[1]" class="all-margin"></b-form-input>
@@ -68,7 +68,7 @@
           </div>
 
         </div>
-        <div @click="addQuestion" slot="modal-ok">Save</div>
+        <div @click="addQuestion()" slot="modal-ok">Save</div>
       </b-modal>
     </div>
   </div>
