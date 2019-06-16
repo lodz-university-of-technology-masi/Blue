@@ -12,6 +12,7 @@
         class="margin-bottom btn btn-success btn-lg"
       >Add new question</button>
       <b-button @click="goToWiki" class="margin-bottom button-left-margin btn btn-success btn-lg">Wiki</b-button>
+      <b-button @click="goToSynonyms" class="margin-bottom button-left-margin btn btn-success btn-lg">Synonyms</b-button>
       <ul id="questionList">
         <li v-for="question in questions" :key="question.id">
           <QuestionCard @refreshQuestions="getQuestions" :question="question"></QuestionCard>
@@ -167,11 +168,21 @@
           .then(function() {});
       },
       goToWiki: function(){
-        if(this.test.language.name === 'Polski'){
+        if(this.test.language.name === 'PL'){
           window.open('https://pl.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
         }
-        window.open('https://en.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
+        if(this.test.language.name === 'EN'){
+          window.open('https://en.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
+        }
 
+      },
+      goToSynonyms: function(){
+        if(this.test.language.name === 'PL'){
+          window.open('https://www.synonimy.pl/synonim/' + window.getSelection().toString(), '_blank');
+        }
+        if(this.test.language.name === 'EN'){
+          window.open('http://www.synonymy.com/results.php?word=' + window.getSelection().toString(), '_blank');
+        }
       }
     },
     mounted: function() {
