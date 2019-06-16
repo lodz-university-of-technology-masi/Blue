@@ -248,22 +248,6 @@
             this.$emit("hideLoadingCircle");
           })
           .then(function() {});
-      },
-      goToWiki: function(){
-        if(this.test.language.name === 'PL'){
-          window.open('https://pl.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
-        }
-        if(this.test.language.name === 'EN'){
-          window.open('https://en.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
-        }
-      },
-      goToSynonyms: function(){
-        if(this.test.language.name === 'PL'){
-          window.open('https://www.synonimy.pl/synonim/' + window.getSelection().toString(), '_blank');
-        }
-        if(this.test.language.name === 'EN'){
-          window.open('http://www.synonymy.com/results.php?word=' + window.getSelection().toString(), '_blank');
-        }
       }
     }
     };
