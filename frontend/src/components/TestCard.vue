@@ -15,6 +15,8 @@
           <b-col sm="5">
             <b-button @click="exportTestToFile()" class="button-left-margin" variant="secondary">Export</b-button>
             <b-button @click="initTranslateModalValues()" class="button-left-margin" variant="secondary">Translate</b-button>
+            <b-button @click="goToWiki()" class="button-left-margin" variant="secondary">Wiki</b-button>
+            <b-button @click="goToSynonyms()" class="button-left-margin" variant="secondary">Synonyms</b-button>
             <b-button @click="initEditModalValues()" class="button-left-margin" variant="primary">Edit</b-button>
             <b-button @click="editTestQuestions(test.id)" class="button-left-margin" variant="primary">Edit questions</b-button>
             <b-button
@@ -246,6 +248,22 @@
             this.$emit("hideLoadingCircle");
           })
           .then(function() {});
+      },
+      goToWiki: function(){
+        if(this.test.language.name === 'PL'){
+          window.open('https://pl.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
+        }
+        if(this.test.language.name === 'EN'){
+          window.open('https://en.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
+        }
+      },
+      goToSynonyms: function(){
+        if(this.test.language.name === 'PL'){
+          window.open('https://www.synonimy.pl/synonim/' + window.getSelection().toString(), '_blank');
+        }
+        if(this.test.language.name === 'EN'){
+          window.open('http://www.synonymy.com/results.php?word=' + window.getSelection().toString(), '_blank');
+        }
       }
     }
     };
