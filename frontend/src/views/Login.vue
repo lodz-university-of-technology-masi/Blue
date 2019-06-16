@@ -18,65 +18,33 @@
         </button>
       </div>
     </form>
+
+    <div>
+      <b-alert
+        class="alert-msg"
+        v-model="showAlert"
+        variant="danger"
+        show
+        dismissible
+      >{{alertMessage}}</b-alert>
+    </div>
+    
   </div>
 </template>
 
-<!--TODO: how to add processing scss to project, check how to reuse styles
-<style lang="scss">
-
-  label {
-    display: block;
-    margin-bottom: 4px;
-  }
-  .login-heading {
-    margin-bottom: 16px;
-    text-align: center;
-  }
-  .form-control {
-    margin-bottom: 24px;
-    text-align: center;
-  }
-  .mb-more {
-    margin-bottom: 42px;
-  }
-  .login-form {
-    max-width: 500px;
-    margin: auto;
-  }
-  .login-input {
-
-    width: 30%;
-    font-size: 16px;
-    padding: 12px 16px;
-    outline: 0;
-    border-radius: 3px;
-    border: 1px solid lightgrey;
-  }
-  .btn-submit {
-    width: 30%;
-    padding: 14px 16px;
-    font-size: 18px;
-    font-weight: bold;
-    background: #60BD4F;
-    color: white;
-    border-radius: 3px;
-    cursor: pointer;
-    &:hover {
-      background: darken(#60BD4F, 10%);
-    }
-  }
-</style>
--->
 <script>
   export default {
     data(){
       return {
         username : "",
-        password : ""
+        password : "",
+        showAlert: false,
+        alertMessage: ""
       }
     },
     methods : {
       handleSubmit(e){
+        let _this = this;
         e.preventDefault()
         if (this.password.length > 0) {
           this.$http.post('http://localhost:8088/login', {
@@ -104,6 +72,10 @@
             })
             .catch(function (error) {
               console.error(error.response);
+              _this.alertMessage =
+              "Incorrect login and/or password. Please try again.";
+            _this.showAlert = true;
+            return false;
             });
         }
       }

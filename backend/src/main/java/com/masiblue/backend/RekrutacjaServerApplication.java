@@ -1,5 +1,6 @@
 package com.masiblue.backend;
 
+import com.masiblue.backend.exception.LanguageAlreadExistsException;
 import com.masiblue.backend.exception.UserAccountAlreadyExistsException;
 import com.masiblue.backend.model.*;
 import com.masiblue.backend.service.*;
@@ -54,7 +55,10 @@ public class RekrutacjaServerApplication implements CommandLineRunner {
         //addDevTestData();
 	}
 
-    private void addProdTestData() throws UserAccountAlreadyExistsException {
+    private void addProdTestData() throws UserAccountAlreadyExistsException, LanguageAlreadExistsException {
+	    languageService.add("EN");
+	    languageService.add("PL");
+
         List<MasiGroup> masiGroups = Arrays.asList(
                 new MasiGroup("Blue", 3),
                 new MasiGroup("Yellow", 4),

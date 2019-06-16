@@ -87,6 +87,8 @@ public class GoogleTranslator implements Translator {
         languageCodes = new HashMap<>();
         languageCodes.put("Polski", "pl");
         languageCodes.put("English", "en");
+        languageCodes.put("PL", "pl");
+        languageCodes.put("EN", "en");
     }
 
 }

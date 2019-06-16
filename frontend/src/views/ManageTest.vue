@@ -1,13 +1,10 @@
 <template>
   <div>
-    <div>
-      <b-row v-if="testLoaded">
-        <b-col>{{test.name}}</b-col>
-        <b-col>{{test.position.name}}</b-col>
-        <b-col>{{test.language.name}}</b-col>
-      </b-row>
+    <div class="jumbotron bg-light" v-if="testLoaded">
+      <h1 class="display-custom">{{test.name}}</h1>
+      <p class="display-custom-2"><b>Position: </b>{{test.position.name}}</p>
+      <p class="display-custom-2"><b>Language: </b>{{test.language.name}}</p>
     </div>
-
     <div>
       <button
         type="button"
@@ -205,5 +202,24 @@
 
   .all-margin {
     margin: 5px 10px 10px;
+  }
+
+  .jumbotron {
+    padding: 1rem 1rem !important;
+    margin-left: 25%;
+    margin-right: 25%;
+  }
+
+  .display-custom {
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .display-custom-2 {
+    font-size: 1.3rem;
+    font-weight: 300;
+    line-height: 1.2;
+    margin: 2%;
   }
 </style>

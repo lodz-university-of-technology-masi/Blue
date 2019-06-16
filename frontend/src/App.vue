@@ -196,4 +196,10 @@ ul {
 #nav a.router-link-exact-active {
   color: #126ac1;
 }
+
+.alert-msg {
+  margin-top: 30px;
+  margin-left: 25%;
+  margin-right: 25%;
+}
 </style>

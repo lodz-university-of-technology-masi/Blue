@@ -15,7 +15,7 @@
     </div>
 
     <div>
-      <b-alert v-model="showAlert" variant="danger" show dismissible>
+      <b-alert class="alert-msg" v-model="showAlert" variant="danger" show dismissible>
         {{alertMessage}}
       </b-alert>
     </div>
@@ -188,8 +188,6 @@
           }
         })
         .catch(function(error) {
-        })
-        .then(function() {
           _this.alertMessage = 'Couldn\'t upload test from the file. ' +
           '\nPlease check if you provided all the necessary data and that the format of csv data is correct.'
           _this.showAlert = true;
