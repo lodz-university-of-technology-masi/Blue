@@ -14,11 +14,13 @@
         @click="initNewQuestionModalValues"
         class="margin-bottom btn btn-success btn-lg"
       >Add new question</button>
+      <b-button @click="goToWiki" class="margin-bottom button-left-margin btn btn-success btn-lg">Wiki</b-button>
       <ul id="questionList">
         <li v-for="question in questions" :key="question.id">
           <QuestionCard @refreshQuestions="getQuestions" :question="question"></QuestionCard>
         </li>
       </ul>
+
     </div>
 
     <div>
@@ -166,6 +168,13 @@
           })
           .catch(function(error) {})
           .then(function() {});
+      },
+      goToWiki: function(){
+        if(this.test.language.name === 'Polski'){
+          window.open('https://pl.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
+        }
+        window.open('https://en.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
+
       }
     },
     mounted: function() {
