@@ -42,7 +42,7 @@ public class UsabilityData {
     private int mouseClicks;
 
     @Column(name="TIME")
-    private int time;
+    private long time;
 
     @Column(name="DIST")
     private long distance;

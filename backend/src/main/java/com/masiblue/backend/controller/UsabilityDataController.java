@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
@@ -25,8 +26,9 @@ public class UsabilityDataController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addNewPosition(Authentication auth, @RequestBody UsabilityData usabilityData) {
+    public ResponseEntity<String> addNewPosition(Authentication auth, @RequestBody UsabilityData usabilityData, HttpServletRequest request) {
         try {
+            usabilityData.setIp(request.getRemoteAddr());
             usabilityDataService.addUsabilityData(auth.getName(), usabilityData);
         } catch (IncorrectUsabilityDataFormat ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
