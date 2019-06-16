@@ -148,7 +148,8 @@ public class TestService {
             Question question = new Question();
             question.setType(Enum.valueOf(Type.class, q.getType()));
             question.setContent(q.getContent());
-            question.setPossibleAnswers(new HashSet<>(Arrays.asList(q.getPossibleAnswers())));
+            String[] splitPossibleAnswers = q.getPossibleAnswers().split("\\|");
+            question.setPossibleAnswers(new HashSet<>(Arrays.asList(splitPossibleAnswers)));
             question.setTest(test);
             questions.add(question);
         });
