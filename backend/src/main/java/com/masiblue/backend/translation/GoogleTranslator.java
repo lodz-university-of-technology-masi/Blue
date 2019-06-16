@@ -45,7 +45,8 @@ public class GoogleTranslator implements Translator {
 
         Translation contentTranslation = translate.translate(oldQuestion.getContent(),
                 Translate.TranslateOption.sourceLanguage(sourceLanguageCode),
-                Translate.TranslateOption.targetLanguage(targetLanguageCode));
+                Translate.TranslateOption.targetLanguage(targetLanguageCode),
+                Translate.TranslateOption.format("text"));
 
         Question newQuestion = new Question();
         newQuestion.setType(oldQuestion.getType());

@@ -221,17 +221,19 @@
         this.$router.push('/manage_test/' + testId)
       },
       translateTest: function() {
-        this.translateTestObject.name = this.testTranslatedName;
+        this.translateTestObject.testName = this.testTranslatedName;
         this.translateTestObject.languageId = this.testTranslatedLanguage.id;
         this.translateTestObject.id = this.test.id;
 
+        console.log(this.translateTestObject)
         this.$http({
           url: "/api/tests/translate",
           method: "POST",
           headers: {
-            Authorization: localStorage.getItem("jwt")
+            Authorization: localStorage.getItem("jwt"),
+            "Content-Type": "application/json"
           },
-          data: JSON.stringify(this.updateTest)
+          data: JSON.stringify(this.translateTestObject)
         })
           .then(response => {
             if (response.status === 200) {
