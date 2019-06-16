@@ -197,11 +197,13 @@
             this.getTests();
             this.files = '';
             _this.hideLoadingCircle();
+            _this.showAlert = false;
           }
         })
         .catch(function(error) {
           _this.alertMessage = 'Couldn\'t upload test from the file. ' +
           '\nPlease check if you provided all the necessary data and that the format of csv data is correct.'
+          _this.showAlert = true;
           _this.hideLoadingCircle();
         });
   },
