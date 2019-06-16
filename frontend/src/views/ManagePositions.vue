@@ -8,7 +8,7 @@
       >Add new position</button>
 
     <div>
-      <b-alert v-model="showAlert" variant="danger" show dismissible>
+      <b-alert class="alert-msg" v-model="showAlert" variant="danger" show dismissible>
         {{alertMessage}}
       </b-alert>
     </div>

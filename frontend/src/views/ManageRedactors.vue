@@ -8,7 +8,7 @@
       >Add new redactor</button>
 
     <div>
-      <b-alert v-model="showAlert" variant="danger" show dismissible>
+      <b-alert class="alert-msg" v-model="showAlert" variant="danger" show dismissible>
         {{alertMessage}}
       </b-alert>
     </div>
@@ -179,10 +179,10 @@ export default {
         })
         .catch(function(error) {
           if (error.response.status === 403) {
-            //TODO: Handle non authorized error
+            _this.alertMessage = 'Couldn\'t add the new redactor.';
+            _this.showAlert = true;
             console.log("403 error");
           } else if (error.response.status === 500) {
-            //TODO: Handle backend error
             _this.alertMessage = 'Couldn\'t add the new redactor';
             _this.showAlert = true;
             console.log("Backend error");
