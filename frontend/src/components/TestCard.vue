@@ -13,9 +13,9 @@
             <p class="card-title question-text">{{test.position.name}}</p>
           </b-col>
           <b-col sm="5">
-            <b-button @click="exportTestToFile" class="button-left-margin" variant="secondary">Export</b-button>
-            <b-button @click="initTranslateModalValues" class="button-left-margin" variant="secondary">Translate</b-button>
-            <b-button @click="initEditModalValues" class="button-left-margin" variant="primary">Edit</b-button>
+            <b-button @click="exportTestToFile()" class="button-left-margin" variant="secondary">Export</b-button>
+            <b-button @click="initTranslateModalValues()" class="button-left-margin" variant="secondary">Translate</b-button>
+            <b-button @click="initEditModalValues()" class="button-left-margin" variant="primary">Edit</b-button>
             <b-button @click="editTestQuestions(test.id)" class="button-left-margin" variant="primary">Edit questions</b-button>
             <b-button
               @click="deleteModalShow = !deleteModalShow"
@@ -93,7 +93,7 @@
             </b-col>
           </b-row>
         </div>
-        <div slot="modal-ok" @click="translateTest">Translate</div>
+        <div slot="modal-ok" @click="translateTest()">Translate</div>
       </b-modal>
     </div>
 
@@ -225,6 +225,7 @@
         this.translateTestObject.languageId = this.testTranslatedLanguage.id;
         this.translateTestObject.id = this.test.id;
 
+        this.$emit("showLoadingCircle");
         console.log(this.translateTestObject)
         this.$http({
           url: "/api/tests/translate",
@@ -237,10 +238,13 @@
         })
           .then(response => {
             if (response.status === 200) {
+              this.$emit("hideLoadingCircle");
               this.$emit("refreshTests");
             }
           })
-          .catch(function(error) {})
+          .catch(function(error) {
+            this.$emit("hideLoadingCircle");
+          })
           .then(function() {});
       }
     }

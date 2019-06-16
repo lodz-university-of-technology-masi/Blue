@@ -28,7 +28,7 @@
       </div>
 
       <div>
-        <button type="submit" @click="handleSubmit">
+        <button type="submit" @click="handleSubmit()">
           Register
         </button>
       </div>
@@ -51,7 +51,7 @@
     },
     methods : {
       handleSubmit(e) {
-        e.preventDefault()
+        e.preventDefault();
 
         if (this.password === this.password_confirmation && this.password.length > 0)
         {

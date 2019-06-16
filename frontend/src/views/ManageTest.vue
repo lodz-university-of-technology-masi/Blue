@@ -8,10 +8,10 @@
     <div>
       <button
         type="button"
-        @click="initNewQuestionModalValues"
+        @click="initNewQuestionModalValues()"
         class="margin-bottom btn btn-success btn-lg"
       >Add new question</button>
-      <b-button @click="goToWiki" class="margin-bottom button-left-margin btn btn-success btn-lg">Wiki</b-button>
+      <b-button @click="goToWiki()" class="margin-bottom button-left-margin btn btn-success btn-lg">Wiki</b-button>
       <ul id="questionList">
         <li v-for="question in questions" :key="question.id">
           <QuestionCard @refreshQuestions="getQuestions" :question="question"></QuestionCard>
@@ -67,7 +67,7 @@
           </div>
 
         </div>
-        <div @click="addQuestion" slot="modal-ok">Save</div>
+        <div @click="addQuestion()" slot="modal-ok">Save</div>
       </b-modal>
     </div>
   </div>

@@ -3,7 +3,7 @@
     <div class="manage_positions">
       <button
         type="button"
-        @click="initNewRedactorModalValues"
+        @click="initNewRedactorModalValues()"
         class="margin-bottom btn btn-success btn-lg"
       >Add new redactor</button>
 
@@ -76,7 +76,7 @@
             </b-col>
           </b-row>
         </div>
-        <div slot="modal-ok" @click="addRedactor">Save</div>
+        <div slot="modal-ok" @click="addRedactor()">Save</div>
       </b-modal>
     </div>
   </div>

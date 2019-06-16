@@ -2,9 +2,11 @@ package com.masiblue.backend;
 
 import com.masiblue.backend.exception.LanguageAlreadExistsException;
 import com.masiblue.backend.exception.UserAccountAlreadyExistsException;
-import com.masiblue.backend.model.*;
+import com.masiblue.backend.model.ApplicationUser;
+import com.masiblue.backend.model.Role;
+import com.masiblue.backend.model.RoleConstants;
+import com.masiblue.backend.model.UserAccount;
 import com.masiblue.backend.service.*;
-import com.masiblue.backend.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,9 +16,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @SpringBootApplication()
 @EnableJpaAuditing

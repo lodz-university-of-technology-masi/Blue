@@ -3,7 +3,7 @@
     <div>
       <button
         type="button"
-        @click="initNewPositionModalValues"
+        @click="initNewPositionModalValues()"
         class="margin-bottom btn btn-success btn-lg"
       >Add new position</button>
 
@@ -43,7 +43,7 @@
             </b-col>
           </b-row>
         </div>
-        <div @click="addPosition" slot="modal-ok">Save</div>
+        <div @click="addPosition()" slot="modal-ok">Save</div>
       </b-modal>
     </div>
   </div>

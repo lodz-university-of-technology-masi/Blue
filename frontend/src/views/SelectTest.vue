@@ -22,7 +22,7 @@
         >{{role.name}}</b-dropdown-item>
       </b-dropdown>
     </b-form>
-    <button type="submit" @click="redirectToSolve">
+    <button type="submit" @click="redirectToSolve()">
       Select
     </button>
   </div>

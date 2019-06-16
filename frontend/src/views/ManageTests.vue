@@ -3,27 +3,31 @@
     <div>
       <button
         type="button"
-        @click="initNewTestModalValues"
+        @click="initNewTestModalValues()"
         class="margin-bottom button-left-margin btn btn-success btn-lg"
       >Add new test</button>
 
       <button
         type="button"
-        @click="initImportTestModalValues"
+        @click="initImportTestModalValues()"
         class="margin-bottom button-left-margin btn btn-success btn-lg"
       >Import test from .csv file</button>
     </div>
 
-    <div>
-      <b-alert class="alert-msg" v-model="showAlert" variant="danger" show dismissible>
-        {{alertMessage}}
-      </b-alert>
+    <div class="loading-alert-part">
+        <b-spinner v-show="showLoading" variant="primary"></b-spinner>
+        <b-alert class="alert-msg-without-margin" v-model="showAlert" variant="danger" show dismissible>
+          {{alertMessage}}
+        </b-alert>
     </div>
 
     <div>
       <ul id="questionList">
         <li v-for="test in tests" :key="test.id">
-          <TestCard @refreshTests="getTests" :test="test"
+          <TestCard @showLoadingCircle="showLoadingCircle()" 
+                    @hideLoadingCircle="hideLoadingCircle()"
+                    @refreshTests="getTests()" 
+                    :test="test"
                     :languagesOptions="languagesOptions"
                     :positionsOptions="positionsOptions"></TestCard>
         </li>
@@ -67,7 +71,7 @@
             </b-col>
           </b-row>
         </div>
-        <div slot="modal-ok" @click="addTest">Save</div>
+        <div slot="modal-ok" @click="addTest()">Save</div>
       </b-modal>
     </div>
 
@@ -107,7 +111,7 @@
             </b-col>
           </b-row>
         </div>
-        <div slot="modal-ok" @click="uploadTestFromCsv">Save</div>
+        <div slot="modal-ok" @click="uploadTestFromCsv()">Save</div>
       </b-modal>
     </div>
   </div>
@@ -127,6 +131,7 @@
       importTestModalShow: false,
       showAlert: false,
       alertMessage: '',
+      showLoading: false,
       file: '',
         tests: [],
         inputName: "",
@@ -145,6 +150,12 @@
       }
     },
     methods: {
+      showLoadingCircle: function() {
+        this.showLoading = true;
+      },
+      hideLoadingCircle: function() {
+        this.showLoading = false;
+      },
       initNewTestModalValues: function() {
         this.newTestName = "";
         this.addTestModalShow = true;
@@ -166,12 +177,12 @@
         this.showAlert = true;
         return false;
     }
+    this.showLoadingCircle();
     let _this = this;
     let formData = new FormData();
     formData.append('file', this.file);
     formData.append('positionId', this.newTestPosition.id);
     formData.append('testName', this.newTestName);
-
     this.$http({
         url: "api/tests/csv/import",
         method: "POST",
@@ -181,19 +192,21 @@
         data: formData
       })
         .then(response => {
+          this.hideLoadingCircle();
           if (response.status === 200) {
             this.getTests();
             this.files = '';
-            _this.showAlert = false;
+            _this.hideLoadingCircle();
           }
         })
         .catch(function(error) {
           _this.alertMessage = 'Couldn\'t upload test from the file. ' +
           '\nPlease check if you provided all the necessary data and that the format of csv data is correct.'
-          _this.showAlert = true;
+          _this.hideLoadingCircle();
         });
   },
       getTests: function() {
+        this.hideLoadingCircle();
         this.$http({
           url: "/api/tests",
           headers: {
@@ -272,8 +285,7 @@
               this.getTests();
             }
           })
-          .catch(function(error) {})
-          .then(function() {
+          .catch(function(error) {
           _this.alertMessage = 'Couldn\'t add the new test';
           _this.showAlert = true;
           });
@@ -316,7 +328,7 @@
   }
 
   .margin-bottom {
-    margin-bottom: 30px;
+    margin-bottom: 10px;
   }
 
 .button-left-margin {
@@ -325,5 +337,10 @@
 
   .bottom-margin {
     margin-bottom: 10px;
+  }
+
+  .loading-alert-part {
+    margin-bottom: 10px; 
+    min-height: 30px;
   }
 </style>

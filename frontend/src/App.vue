@@ -202,4 +202,9 @@ ul {
   margin-left: 25%;
   margin-right: 25%;
 }
+
+.alert-msg-without-margin {
+  margin-left: 25%;
+  margin-right: 25%;
+}
 </style>
