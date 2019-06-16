@@ -60,7 +60,7 @@
               <b-form-input v-model="newQuestionAnswers[0]" class="all-margin"></b-form-input>
             </b-row>
             <b-row>
-              <label class="all-margin" >Select maxiumum</label>
+              <label class="all-margin" >Select maximum</label>
             </b-row>
             <b-row>
               <b-form-input v-model="newQuestionAnswers[1]" class="all-margin"></b-form-input>
