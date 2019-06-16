@@ -174,7 +174,6 @@
         if(this.test.language.name === 'EN'){
           window.open('https://en.wikipedia.org/wiki/' + window.getSelection().toString(), '_blank');
         }
-
       },
       goToSynonyms: function(){
         if(this.test.language.name === 'PL'){
